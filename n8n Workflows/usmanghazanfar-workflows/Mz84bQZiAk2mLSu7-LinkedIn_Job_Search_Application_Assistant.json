@@ -1,0 +1,500 @@
+{
+  "name": "LinkedIn Job Search & Application Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "LinkedIn Job Search & Application Assistant",
+        "formDescription": "Paste one job you found. The assistant scores your match and prepares a tailored CV summary, cover letter, and LinkedIn application answers — nothing is submitted automatically.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Job Title",
+              "fieldName": "job_title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "fieldName": "company",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Location",
+              "fieldName": "location",
+              "placeholder": "e.g. Remote / Lahore, Pakistan"
+            },
+            {
+              "fieldLabel": "Work Type",
+              "fieldType": "dropdown",
+              "fieldName": "remote_type",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Remote"
+                  },
+                  {
+                    "option": "Onsite"
+                  },
+                  {
+                    "option": "Hybrid"
+                  },
+                  {
+                    "option": "Unknown"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Job URL",
+              "fieldName": "job_url"
+            },
+            {
+              "fieldLabel": "Full Job Description (paste here)",
+              "fieldType": "textarea",
+              "fieldName": "job_description",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "buttonLabel": "Analyze Job",
+          "path": "linkedin-job-assistant"
+        }
+      },
+      "id": "8f08a3fd-9be8-4a21-a14c-c421b6bd6e67",
+      "name": "Job Intake Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        112
+      ],
+      "webhookId": "a27d60e6-bb6d-4036-bce5-9a3d6783a89a"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this job for the candidate.\n\nJob Title: {{ $json.job_title }}\nCompany: {{ $json.company }}\nLocation: {{ $json.location }}\nWork Type: {{ $json.remote_type }}\nJob URL: {{ $json.job_url }}\n\nFull Job Description:\n{{ $json.job_description }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a meticulous LinkedIn Job Search & Application Assistant for one specific candidate. Accuracy over quantity. NEVER invent experience, qualifications, projects, achievements, or skills. Only use facts from the CANDIDATE PROFILE below. If the job needs something the candidate lacks, list it under missing_skills — do not fabricate it.\n\n=== CANDIDATE PROFILE ===\nName: Usman Ghazanfar\nField: Artificial Intelligence / IT\nEducation: ADP Artificial Intelligence (currently 3rd year)\nSkills: Python, C++, Assembly/MASM, HTML, CSS, JavaScript, AI fundamentals, Machine Learning fundamentals, Data Structures & Algorithms, Web Development, React, Git/GitHub, Arduino, MS Office, Communication, Social Media Marketing.\nProjects: AI/ML academic projects; Web development projects; Arduino Smart Helmet project; Property/real-estate website project; Discrete Mathematics Solver web application; AI/E-commerce assistant concepts.\nTarget roles (priority order): AI Intern, Machine Learning Intern, Python Developer Intern, Junior Python Developer, AI/ML Junior Developer, Software Developer Intern, Web Developer Intern, Junior Web Developer, Data/AI Intern, Entry-Level IT roles.\nPreferences: Remote or Pakistan-based; international companies accepting remote applicants from Pakistan; internships / entry-level; 0-2 years experience; prefers >=60% skill match. Work authorization: based in Pakistan.\n\n=== MATCH SCORING (0-100) ===\nWeights: Skills 40, Education 20, Experience 15, Projects 15, Location/work authorization 10.\nScore each component out of its max, then sum for match_percentage. Populate score_breakdown accordingly.\nClassification: 90-100 = Excellent Match; 75-89 = Strong Match; 60-74 = Possible Match; below 60 = Low Match.\n\n=== APPLICATION PRIORITY ===\nSet priority to HIGH, MEDIUM, or LOW using match %, entry-level suitability, remote availability, and skill compatibility. Jobs clearly requiring significantly more than 2 years experience should be LOW.\n\n=== OUTPUTS REQUIRED (fill every field of the JSON schema) ===\n- Extract required_skills, experience_requirement, salary, application_deadline from the description (use \"Not specified\" when absent).\n- matched_skills / missing_skills relative to the candidate's real skills.\n- keywords + ats_keywords pulled from the job description.\n- professional_summary: 2-3 sentences tailored to THIS job, only from real profile facts.\n- skills_to_highlight: candidate's real skills most relevant to this job.\n- reordered_projects: the candidate's real projects reordered by relevance to this job (do not add new ones).\n- cover_letter: short (max ~180 words), specific to this company/role, professional, no generic filler, no invented facts.\n- application_answers: concise, first-person answers for all six keys, only using real profile info.\n- recommendation: one-line apply / skip guidance.\n\nReturn ONLY the structured JSON."
+        }
+      },
+      "id": "b1780b5e-79a1-4302-8019-e9fcda2b25f3",
+      "name": "Job Match & Application Prep",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "7507eb67-a04b-41a4-9762-6e920f967b24",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        336
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "67ce2omT71nU5R4R",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"match_percentage\":82,\"classification\":\"Strong Match\",\"priority\":\"HIGH\",\"score_breakdown\":{\"skills_out_of_40\":33,\"education_out_of_20\":16,\"experience_out_of_15\":10,\"projects_out_of_15\":13,\"location_out_of_10\":10},\"experience_requirement\":\"0-2 years\",\"required_skills\":[\"Python\",\"Machine Learning\",\"Git\"],\"matched_skills\":[\"Python\",\"Machine Learning fundamentals\",\"Git/GitHub\"],\"missing_skills\":[\"TensorFlow\"],\"salary\":\"Not specified\",\"application_deadline\":\"Not specified\",\"keywords\":[\"machine learning\",\"python\",\"model training\"],\"ats_keywords\":[\"Python\",\"Machine Learning\",\"Data Structures\"],\"professional_summary\":\"Third-year AI student (ADP Artificial Intelligence) with hands-on Python and ML fundamentals...\",\"skills_to_highlight\":[\"Python\",\"Machine Learning fundamentals\",\"React\",\"Git/GitHub\"],\"reordered_projects\":[\"AI/ML academic projects\",\"Discrete Mathematics Solver web application\",\"Arduino Smart Helmet project\"],\"cover_letter\":\"Dear Hiring Team, ...\",\"application_answers\":{\"why_interested_in_role\":\"...\",\"why_should_we_hire_you\":\"...\",\"tell_us_about_yourself\":\"...\",\"your_strengths\":\"...\",\"experience_with_python_ai\":\"...\",\"why_this_company\":\"...\"},\"recommendation\":\"Apply — strong alignment with your Python and ML background.\"}"
+      },
+      "id": "97471bb0-0185-40cb-acc2-4574b5ce0ae0",
+      "name": "Structured Result",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "iTNPdXnuMz8npAYt",
+          "cachedResultName": "LinkedIn Application Tracker"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company": "={{ $(\"Job Intake Form\").item.json.company }}",
+            "job_title": "={{ $(\"Job Intake Form\").item.json.job_title }}",
+            "location": "={{ $(\"Job Intake Form\").item.json.location }}",
+            "remote_type": "={{ $(\"Job Intake Form\").item.json.remote_type }}",
+            "job_url": "={{ $(\"Job Intake Form\").item.json.job_url }}",
+            "match_percentage": "={{ $json.output.match_percentage }}",
+            "classification": "={{ $json.output.classification }}",
+            "priority": "={{ $json.output.priority }}",
+            "application_status": "Application Ready",
+            "cv_version": "={{ $(\"Job Intake Form\").item.json.job_title }} - {{ $(\"Job Intake Form\").item.json.company }}",
+            "cover_letter": "={{ $json.output.cover_letter }}",
+            "date_found": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "remote_type",
+              "displayName": "remote_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "match_percentage",
+              "displayName": "match_percentage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "classification",
+              "displayName": "classification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "application_status",
+              "displayName": "application_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cv_version",
+              "displayName": "cv_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cover_letter",
+              "displayName": "cover_letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_url",
+              "displayName": "job_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date_found",
+              "displayName": "date_found",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "date",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "662d6661-316f-47ac-8dd0-87af49699ad1",
+      "name": "Log To Tracker",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "showText",
+        "responseText": "=<h2>{{ $('Job Match & Application Prep').item.json.output.classification }} — {{ $('Job Match & Application Prep').item.json.output.match_percentage }}% ({{ $('Job Match & Application Prep').item.json.output.priority }} PRIORITY)</h2>\n<p><b>{{ $('Job Intake Form').item.json.job_title }}</b> at <b>{{ $('Job Intake Form').item.json.company }}</b> — {{ $('Job Intake Form').item.json.location }} ({{ $('Job Intake Form').item.json.remote_type }})</p>\n<h3>Score Breakdown</h3>\n<ul>\n<li>Skills: {{ $('Job Match & Application Prep').item.json.output.score_breakdown.skills_out_of_40 }}/40</li>\n<li>Education: {{ $('Job Match & Application Prep').item.json.output.score_breakdown.education_out_of_20 }}/20</li>\n<li>Experience: {{ $('Job Match & Application Prep').item.json.output.score_breakdown.experience_out_of_15 }}/15</li>\n<li>Projects: {{ $('Job Match & Application Prep').item.json.output.score_breakdown.projects_out_of_15 }}/15</li>\n<li>Location/Authorization: {{ $('Job Match & Application Prep').item.json.output.score_breakdown.location_out_of_10 }}/10</li>\n</ul>\n<p><b>Experience required:</b> {{ $('Job Match & Application Prep').item.json.output.experience_requirement }} | <b>Salary:</b> {{ $('Job Match & Application Prep').item.json.output.salary }} | <b>Deadline:</b> {{ $('Job Match & Application Prep').item.json.output.application_deadline }}</p>\n<p><b>Matched skills:</b> {{ $('Job Match & Application Prep').item.json.output.matched_skills.join(', ') }}</p>\n<p><b>Missing skills:</b> {{ $('Job Match & Application Prep').item.json.output.missing_skills.join(', ') }}</p>\n<h3>Recommendation</h3>\n<p>{{ $('Job Match & Application Prep').item.json.output.recommendation }}</p>\n<h3>Tailored Professional Summary</h3>\n<p>{{ $('Job Match & Application Prep').item.json.output.professional_summary }}</p>\n<p><b>Skills to highlight:</b> {{ $('Job Match & Application Prep').item.json.output.skills_to_highlight.join(', ') }}</p>\n<p><b>Projects (reordered):</b> {{ $('Job Match & Application Prep').item.json.output.reordered_projects.join(' | ') }}</p>\n<p><b>ATS keywords:</b> {{ $('Job Match & Application Prep').item.json.output.ats_keywords.join(', ') }}</p>\n<h3>Cover Letter</h3>\n<p style=\"white-space:pre-wrap\">{{ $('Job Match & Application Prep').item.json.output.cover_letter }}</p>\n<h3>LinkedIn Application Answers</h3>\n<p><b>Why interested in this role?</b><br>{{ $('Job Match & Application Prep').item.json.output.application_answers.why_interested_in_role }}</p>\n<p><b>Why should we hire you?</b><br>{{ $('Job Match & Application Prep').item.json.output.application_answers.why_should_we_hire_you }}</p>\n<p><b>Tell us about yourself.</b><br>{{ $('Job Match & Application Prep').item.json.output.application_answers.tell_us_about_yourself }}</p>\n<p><b>What are your strengths?</b><br>{{ $('Job Match & Application Prep').item.json.output.application_answers.your_strengths }}</p>\n<p><b>Experience with Python/AI?</b><br>{{ $('Job Match & Application Prep').item.json.output.application_answers.experience_with_python_ai }}</p>\n<p><b>Why this company?</b><br>{{ $('Job Match & Application Prep').item.json.output.application_answers.why_this_company }}</p>\n<hr>\n<p><i>Saved to your Application Tracker with status \"Application Ready\". Review everything before you submit — nothing is submitted automatically.</i></p>"
+      },
+      "id": "e8f198ca-4178-45e5-955e-50d25a000541",
+      "name": "Show Results",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        800,
+        112
+      ],
+      "webhookId": "1133d080-d226-4aee-a27c-2bc364793e9a"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        112
+      ],
+      "id": "c7c5081d-c5bb-4fd9-9996-9feac6d16561",
+      "name": "Reply to a message",
+      "webhookId": "da027f24-a076-4bdf-8fe8-9c4b3a903ac7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IlG8uCvjv2r1mPTv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        464
+      ],
+      "id": "95d338c4-b1df-481f-a52e-a0b9f447a2c6",
+      "name": "MongoDB Chat Memory"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1248,
+        112
+      ],
+      "id": "9dee9358-8520-4b18-9320-53b610c90084",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1472,
+        131.75000667572021
+      ],
+      "id": "d7019a91-dcf0-4277-b756-363a2f864dae",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        352
+      ],
+      "id": "71cb2194-6a48-49fc-8ce9-94c0fbff530a",
+      "name": "Google Gemini Chat Model"
+    }
+  ],
+  "connections": {
+    "Job Intake Form": {
+      "main": [
+        [
+          {
+            "node": "Job Match & Application Prep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Match & Application Prep": {
+      "main": [
+        [
+          {
+            "node": "Log To Tracker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Job Match & Application Prep",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Result": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Job Match & Application Prep",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log To Tracker": {
+      "main": [
+        [
+          {
+            "node": "Show Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show Results": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Job Match & Application Prep",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {
+    "AI Agent": [
+      {
+        "json": {
+          "name": "First item",
+          "code": 1
+        }
+      },
+      {
+        "json": {
+          "name": "Second item",
+          "code": 2
+        }
+      }
+    ]
+  },
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

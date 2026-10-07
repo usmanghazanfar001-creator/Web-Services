@@ -1,0 +1,270 @@
+{
+  "name": "01 - Order Management (New Order Validation)",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "topic": "orders/create"
+      },
+      "id": "7ba1586f-46b1-4487-9468-3140a3a3eb84",
+      "name": "New Shopify Order",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        96
+      ],
+      "webhookId": "c0d585c3-b97a-4a7b-8160-64cf39070c27",
+      "credentials": {
+        "shopifyAccessTokenApi": {
+          "id": "2ZTPmZIr3j4px0hG",
+          "name": "Shopify Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst order = $json;\n\nconst flags = [];\nlet riskLevel = 'low';\nlet needsApproval = false;\n\n// --- Payment status ---\nconst financial = (order.financial_status || 'unknown').toLowerCase();\nlet paymentState = 'unknown';\nif (financial === 'paid') paymentState = 'paid';\nelse if (['pending', 'authorized', 'partially_paid'].includes(financial)) paymentState = 'pending';\nelse if (['voided', 'refunded', 'declined'].includes(financial)) paymentState = 'failed';\n\nif (paymentState === 'pending') flags.push('Pending payment');\nif (paymentState === 'failed') { flags.push('Failed/voided payment'); riskLevel = 'high'; }\n\n// --- Product / variant availability ---\nconst lineItems = Array.isArray(order.line_items) ? order.line_items : [];\nconst outOfStock = lineItems.filter(li => Number(li.fulfillable_quantity) < Number(li.quantity));\nif (outOfStock.length > 0) {\n  flags.push('Out-of-stock / insufficient inventory: ' + outOfStock.map(li => (li.sku || li.title)).join(', '));\n  if (riskLevel === 'low') riskLevel = 'medium';\n}\n\n// --- Shipping information completeness ---\nconst ship = order.shipping_address || {};\nconst requiredShip = ['address1', 'city', 'zip', 'country'];\nconst missingShip = requiredShip.filter(f => !ship[f]);\nconst shippingComplete = missingShip.length === 0;\nif (!shippingComplete) {\n  flags.push('Missing shipping info: ' + missingShip.join(', '));\n  if (riskLevel === 'low') riskLevel = 'medium';\n}\n\n// --- Duplicate / suspicious heuristics ---\n// (Deeper duplicate detection against a store of processed IDs comes in a later phase.)\nconst total = parseFloat(order.total_price || '0');\nif (total >= 500) { flags.push('High-value order (manual review recommended)'); riskLevel = 'high'; }\nif (order.customer && Number(order.customer.orders_count) === 0 && total >= 200) {\n  flags.push('First-time customer, high value (possible fraud)');\n  riskLevel = 'high';\n}\n\n// --- Assign order status ---\nlet orderStatus;\nif (paymentState === 'failed') orderStatus = 'Payment failed - hold';\nelse if (paymentState === 'pending') orderStatus = 'Awaiting payment';\nelse if (outOfStock.length > 0) orderStatus = 'Paid - inventory issue';\nelse if (!shippingComplete) orderStatus = 'Paid - shipping info needed';\nelse orderStatus = 'Paid - ready for fulfillment';\n\n// --- Recommended action + approval gate ---\nlet recommendedAction;\nif (riskLevel === 'high') {\n  needsApproval = true;\n  recommendedAction = 'Hold order and request human approval before any irreversible action.';\n} else if (orderStatus === 'Paid - ready for fulfillment') {\n  recommendedAction = 'Proceed to fulfillment workflow.';\n} else {\n  recommendedAction = 'Resolve the flagged issue(s) before fulfillment.';\n}\n\nconst customerName = order.customer\n  ? [order.customer.first_name, order.customer.last_name].filter(Boolean).join(' ')\n  : (ship.name || 'Unknown');\n\nconst lineItemsSummary = lineItems\n  .map(li => `${li.quantity} x ${li.title}${li.variant_title ? ' (' + li.variant_title + ')' : ''} [${li.sku || 'no-sku'}]`)\n  .join('; ');\n\nreturn [{\n  json: {\n    order_id: String(order.id),\n    order_number: order.name || ('#' + order.order_number),\n    created_at: order.created_at,\n    customer_name: customerName,\n    customer_email: order.email || (order.customer && order.customer.email) || '',\n    total_price: order.total_price,\n    currency: order.currency,\n    payment_state: paymentState,\n    order_status: orderStatus,\n    line_items_summary: lineItemsSummary,\n    shipping_complete: shippingComplete,\n    flags: flags.length ? flags.join(' | ') : 'None',\n    risk_level: riskLevel,\n    needs_approval: needsApproval,\n    recommended_action: recommendedAction,\n    processed_at: $now.toISO(),\n    execution_id: $execution.id,\n  }\n}];\n"
+      },
+      "id": "c23f12bc-4a01-4ad3-97ee-5abdc6397afb",
+      "name": "Validate & Classify Order",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1pg4zt0wolXVN0PBefgi9RdUEeFwEHUpCRDtUsI24KYk",
+          "mode": "list",
+          "cachedResultName": "Shopify Orders Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pg4zt0wolXVN0PBefgi9RdUEeFwEHUpCRDtUsI24KYk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "customer"
+          ],
+          "schema": [
+            {
+              "id": "order_id",
+              "displayName": "order_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "order_number",
+              "displayName": "order_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "customer_name",
+              "displayName": "customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total_price",
+              "displayName": "total_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "136aac7c-b9d2-4213-8bd5-9a694c023ad9",
+      "name": "Log Order to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        96
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hLtP4fg2TUZcsuu7",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "attention",
+              "leftValue": "={{ $('Validate & Classify Order').item.json.risk_level }}",
+              "rightValue": "low",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d177327f-207d-4fe1-bb50-e7a913838835",
+      "name": "Needs Human Attention?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "usmanghazanfar001@gmail.com",
+        "subject": "=[ACTION NEEDED] Order {{ $('Validate & Classify Order').item.json.order_number }} - {{ $('Validate & Classify Order').item.json.risk_level }} risk",
+        "emailType": "text",
+        "message": "=A new Shopify order requires attention.\n\nOrder: {{ $('Validate & Classify Order').item.json.order_number }} (ID {{ $('Validate & Classify Order').item.json.order_id }})\nPlaced: {{ $('Validate & Classify Order').item.json.created_at }}\nCustomer: {{ $('Validate & Classify Order').item.json.customer_name }} <{{ $('Validate & Classify Order').item.json.customer_email }}>\nTotal: {{ $('Validate & Classify Order').item.json.total_price }} {{ $('Validate & Classify Order').item.json.currency }}\n\nPayment: {{ $('Validate & Classify Order').item.json.payment_state }}\nAssigned status: {{ $('Validate & Classify Order').item.json.order_status }}\nItems: {{ $('Validate & Classify Order').item.json.line_items_summary }}\nShipping complete: {{ $('Validate & Classify Order').item.json.shipping_complete }}\n\nRisk level: {{ $('Validate & Classify Order').item.json.risk_level }}\nFlags: {{ $('Validate & Classify Order').item.json.flags }}\nNeeds approval: {{ $('Validate & Classify Order').item.json.needs_approval }}\n\nAI recommendation: {{ $('Validate & Classify Order').item.json.recommended_action }}\n\nNOTE: No irreversible action has been taken. Review and approve before fulfillment.",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "ec0010c2-982e-4fcf-ab1e-dd96ea6c40ba",
+      "name": "Alert: Order Needs Review",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        0
+      ],
+      "webhookId": "7f0b2cfe-dbb7-47ae-8d52-015079ae9e0b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IlG8uCvjv2r1mPTv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "usmanghazanfar001@gmail.com",
+        "subject": "=New order {{ $('Validate & Classify Order').item.json.order_number }} - ready for fulfillment",
+        "emailType": "text",
+        "message": "=New Shopify order processed cleanly.\n\nOrder: {{ $('Validate & Classify Order').item.json.order_number }} (ID {{ $('Validate & Classify Order').item.json.order_id }})\nCustomer: {{ $('Validate & Classify Order').item.json.customer_name }} <{{ $('Validate & Classify Order').item.json.customer_email }}>\nTotal: {{ $('Validate & Classify Order').item.json.total_price }} {{ $('Validate & Classify Order').item.json.currency }}\nStatus: {{ $('Validate & Classify Order').item.json.order_status }}\nItems: {{ $('Validate & Classify Order').item.json.line_items_summary }}\n\nRecommendation: {{ $('Validate & Classify Order').item.json.recommended_action }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "fae20356-f8a8-4d8f-9f3d-e7fb3490c6e1",
+      "name": "Notify: Order OK",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        192
+      ],
+      "webhookId": "f89a4165-ff79-40a1-ad7e-76f37c2ea230",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IlG8uCvjv2r1mPTv",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "New Shopify Order": {
+      "main": [
+        [
+          {
+            "node": "Validate & Classify Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Classify Order": {
+      "main": [
+        [
+          {
+            "node": "Log Order to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Order to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Needs Human Attention?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Human Attention?": {
+      "main": [
+        [
+          {
+            "node": "Alert: Order Needs Review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify: Order OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

@@ -1,0 +1,42 @@
+<!-- Paste into hussnainestateadvisor.com. Replace WEBHOOK_URL with your n8n PRODUCTION webhook URL
+     (ends in /webhook/hussnain-lead, NOT /webhook-test/). -->
+<form id="leadForm" style="max-width:480px;display:grid;gap:10px">
+  <input name="name" placeholder="Your name" required>
+  <input name="phone" placeholder="Phone / WhatsApp (03xx xxxxxxx)" required>
+  <input name="email" type="email" placeholder="Email (optional)">
+  <input name="city" placeholder="City">
+  <select name="interest">
+    <option value="">I'm interested in...</option>
+    <option>Residential plot</option>
+    <option>Commercial plot</option>
+    <option>Agricultural land</option>
+    <option>Investment</option>
+    <option>Selling my property</option>
+  </select>
+  <input name="budget" placeholder="Budget (e.g. 50 lakh)">
+  <textarea name="message" rows="4" placeholder="Tell us what you're looking for"></textarea>
+  <!-- honeypot: hidden from humans, bots fill it -->
+  <input name="company_url" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+  <button type="submit">Get a Free Consultation</button>
+  <p id="leadMsg"></p>
+</form>
+<script>
+document.getElementById('leadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById('leadMsg');
+  const data = Object.fromEntries(new FormData(e.target));
+  data.source_page = location.href;
+  try {
+    const r = await fetch('WEBHOOK_URL', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    const j = await r.json();
+    msg.textContent = j.message;
+    if (j.success) e.target.reset();
+  } catch (err) {
+    msg.textContent = 'Something went wrong. Please WhatsApp us directly.';
+  }
+});
+</script>

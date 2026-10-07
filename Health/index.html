@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Healthy Living Hub – Wellness · Community · Growth</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --green-deep: #0f6e56;
+    --green-mid: #1d9e75;
+    --green-light: #e1f5ee;
+    --green-pale: #f3fbf7;
+    --sun-gold: #d4870e;
+    --sun-amber: #f4a822;
+    --sun-pale: #fdf4e3;
+    --teal: #0e7490;
+    --navy: #0c3547;
+    --cream: #faf8f3;
+    --white: #ffffff;
+    --text-dark: #1a2e25;
+    --text-muted: #5a7268;
+    --border: rgba(15,110,86,0.12);
+    --shadow-soft: 0 4px 32px rgba(15,110,86,0.10);
+    --shadow-card: 0 2px 16px rgba(15,110,86,0.08);
+    --radius: 16px;
+    --radius-sm: 8px;
+  }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+ 
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(250,248,243,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 clamp(1.5rem, 5vw, 4rem);
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--green-mid), var(--sun-amber));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .nav-logo-text { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--green-deep); font-weight: 700; }
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--green-deep); }
+  .nav-cta {
+    background: var(--green-deep); color: white;
+    padding: 0.5rem 1.25rem; border-radius: 100px;
+    font-size: 0.875rem; font-weight: 600;
+    text-decoration: none; transition: background 0.2s, transform 0.2s;
+  }
+  .nav-cta:hover { background: var(--green-mid); transform: translateY(-1px); }
+ 
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    padding: 120px clamp(1.5rem, 6vw, 5rem) 80px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    background: var(--cream);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; right: -200px; top: -100px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(29,158,117,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; left: -100px; bottom: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(244,168,34,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-light); color: var(--green-deep);
+    padding: 0.375rem 0.875rem; border-radius: 100px;
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.03em;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(15,110,86,0.2);
+  }
+  .hero-badge span { width: 6px; height: 6px; background: var(--green-mid); border-radius: 50%; display: inline-block; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.3); } }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700; line-height: 1.15;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em { color: var(--green-mid); font-style: italic; }
+  .hero p {
+    font-size: 1.1rem; color: var(--text-muted);
+    max-width: 480px; margin-bottom: 2.5rem; line-height: 1.8;
+  }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--green-deep); color: white;
+    padding: 0.875rem 2rem; border-radius: 100px;
+    font-weight: 600; font-size: 0.95rem;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.25s; box-shadow: 0 4px 20px rgba(15,110,86,0.3);
+  }
+  .btn-primary:hover { background: var(--green-mid); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(15,110,86,0.35); }
+  .btn-secondary {
+    background: transparent; color: var(--green-deep);
+    padding: 0.875rem 2rem; border-radius: 100px;
+    font-weight: 600; font-size: 0.95rem;
+    text-decoration: none; border: 1.5px solid var(--green-deep);
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.25s;
+  }
+  .btn-secondary:hover { background: var(--green-light); }
+  .hero-visual {
+    display: flex; justify-content: center; align-items: center;
+    position: relative;
+  }
+  .logo-showcase {
+    width: 340px; height: 340px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-soft), 0 0 0 20px rgba(29,158,117,0.06), 0 0 0 40px rgba(29,158,117,0.03);
+    position: relative; z-index: 1;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .logo-showcase img { width: 80%; height: 80%; object-fit: contain; }
+  .stat-pill {
+    position: absolute;
+    background: white; border-radius: 100px;
+    padding: 0.5rem 1rem; box-shadow: var(--shadow-card);
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.8rem; font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .stat-pill.s1 { top: 40px; left: -10px; }
+  .stat-pill.s2 { bottom: 60px; right: -20px; }
+  .stat-pill.s3 { bottom: 10px; left: 10px; }
+  .stat-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .si-green { background: var(--green-light); }
+  .si-gold { background: var(--sun-pale); }
+ 
+  /* ── TRUST BAR ── */
+  .trust-bar {
+    background: var(--green-deep);
+    padding: 1.25rem clamp(1.5rem, 5vw, 4rem);
+    display: flex; align-items: center; gap: 3rem;
+    overflow: hidden;
+  }
+  .trust-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.85); font-size: 0.85rem; white-space: nowrap; }
+  .trust-dot { width: 4px; height: 4px; background: var(--sun-amber); border-radius: 50%; flex-shrink: 0; }
+  .trust-scroll { display: flex; gap: 3rem; animation: scroll 30s linear infinite; }
+  @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+ 
+  /* ── SECTION SHARED ── */
+  section { padding: 6rem clamp(1.5rem, 6vw, 5rem); }
+  .section-label {
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--green-mid);
+    margin-bottom: 0.75rem; display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700; line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .section-sub { font-size: 1.05rem; color: var(--text-muted); max-width: 560px; line-height: 1.8; }
+  .section-header { margin-bottom: 3.5rem; }
+  .section-header.centered { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .section-header.centered .section-sub { text-align: center; }
+ 
+  /* ── FEATURED PRODUCTS ── */
+  .products { background: var(--white); }
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .product-card {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; background: var(--white);
+    transition: all 0.3s; cursor: pointer;
+    position: relative;
+  }
+  .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-soft); border-color: rgba(29,158,117,0.3); }
+  .product-badge {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--sun-amber); color: white;
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 700; z-index: 2;
+  }
+  .product-img {
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem;
+    background: var(--green-pale);
+    position: relative;
+  }
+  .product-body { padding: 1.25rem; }
+  .product-tag { font-size: 0.72rem; font-weight: 600; color: var(--green-mid); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+  .product-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .product-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 1.25rem; font-weight: 700; color: var(--green-deep); }
+  .product-commission { font-size: 0.75rem; color: var(--text-muted); }
+  .product-stars { color: var(--sun-amber); font-size: 0.8rem; margin-bottom: 0.25rem; }
+  .btn-buy {
+    background: var(--green-deep); color: white;
+    padding: 0.5rem 1.1rem; border-radius: 100px;
+    font-size: 0.8rem; font-weight: 600;
+    text-decoration: none; transition: background 0.2s;
+  }
+  .btn-buy:hover { background: var(--green-mid); }
+ 
+  /* ── WHY US ── */
+  .why { background: var(--cream); }
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .why-features { display: grid; gap: 1.5rem; }
+  .why-feat {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1.25rem; border-radius: var(--radius);
+    border: 1px solid var(--border); background: white;
+    transition: all 0.25s;
+  }
+  .why-feat:hover { border-color: rgba(29,158,117,0.3); box-shadow: var(--shadow-card); }
+  .feat-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: var(--green-light); border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .feat-title { font-weight: 600; margin-bottom: 0.25rem; font-size: 0.95rem; }
+  .feat-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+ 
+  /* ── CATEGORIES ── */
+  .categories { background: white; }
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+  .cat-card {
+    padding: 1.75rem 1.25rem; border-radius: var(--radius);
+    border: 1px solid var(--border); text-align: center;
+    cursor: pointer; transition: all 0.25s;
+    text-decoration: none; color: var(--text-dark);
+    display: block;
+  }
+  .cat-card:hover { background: var(--green-light); border-color: rgba(29,158,117,0.4); transform: translateY(-3px); }
+  .cat-icon { font-size: 2.2rem; margin-bottom: 0.75rem; display: block; }
+  .cat-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+  .cat-count { font-size: 0.75rem; color: var(--text-muted); }
+ 
+  /* ── TESTIMONIALS ── */
+  .testimonials { background: var(--cream); }
+  .testi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+  .testi-card {
+    background: white; border-radius: var(--radius);
+    padding: 1.75rem; border: 1px solid var(--border);
+    position: relative;
+  }
+  .testi-card::before {
+    content: '"'; font-family: 'Playfair Display', serif;
+    font-size: 5rem; color: var(--green-light);
+    position: absolute; top: -10px; left: 20px;
+    line-height: 1;
+  }
+  .testi-text { font-size: 0.9rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 1.25rem; padding-top: 1rem; }
+  .testi-author { display: flex; align-items: center; gap: 10px; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--green-light); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; color: var(--green-deep);
+  }
+  .testi-name { font-weight: 600; font-size: 0.875rem; }
+  .testi-role { font-size: 0.75rem; color: var(--text-muted); }
+  .testi-stars { color: var(--sun-amber); font-size: 0.8rem; margin-bottom: 0.5rem; }
+ 
+  /* ── NEWSLETTER ── */
+  .newsletter {
+    background: linear-gradient(135deg, var(--green-deep) 0%, #0a4d3a 100%);
+    padding: 5rem clamp(1.5rem, 6vw, 5rem);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .newsletter::before {
+    content: ''; position: absolute; top: -100px; right: -100px;
+    width: 350px; height: 350px;
+    background: rgba(244,168,34,0.15); border-radius: 50%;
+  }
+  .newsletter h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,3vw,2.5rem); color: white; margin-bottom: 1rem; }
+  .newsletter p { color: rgba(255,255,255,0.75); font-size: 1rem; margin-bottom: 2rem; }
+  .newsletter-form { display: flex; gap: 0.75rem; max-width: 480px; margin: 0 auto; }
+  .newsletter-form input {
+    flex: 1; padding: 0.875rem 1.25rem;
+    border-radius: 100px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    outline: none;
+  }
+  .newsletter-form button {
+    background: var(--sun-amber); color: white;
+    padding: 0.875rem 1.75rem; border-radius: 100px;
+    border: none; font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; white-space: nowrap; transition: background 0.2s;
+  }
+  .newsletter-form button:hover { background: var(--sun-gold); }
+ 
+  /* ── COMMISSION BANNER ── */
+  .commission { background: var(--sun-pale); border-top: 1px solid rgba(212,135,14,0.2); border-bottom: 1px solid rgba(212,135,14,0.2); }
+  .comm-inner { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center; }
+  .comm-stat { padding: 1.5rem; }
+  .comm-number { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; color: var(--sun-gold); display: block; }
+  .comm-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+ 
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy);
+    padding: 4rem clamp(1.5rem, 6vw, 5rem) 2rem;
+    color: rgba(255,255,255,0.7);
+  }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+  .footer-brand h3 { font-family: 'Playfair Display', serif; color: white; font-size: 1.3rem; margin-bottom: 0.75rem; }
+  .footer-brand p { font-size: 0.875rem; line-height: 1.8; max-width: 280px; }
+  .footer-col h4 { color: white; font-size: 0.875rem; font-weight: 600; margin-bottom: 1rem; }
+  .footer-col a { display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 0.5rem; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--sun-amber); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+  .disclaimer { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 1rem; line-height: 1.6; }
+ 
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; text-align: center; }
+    .hero p { max-width: 100%; }
+    .hero-actions { justify-content: center; }
+    .hero-visual { display: none; }
+    .why-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .newsletter-form { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">🌿</div>
+    <span class="nav-logo-text">Healthy Living Hub</span>
+  </a>
+  <div class="nav-links">
+    <a href="#products">Products</a>
+    <a href="#categories">Categories</a>
+    <a href="#why">Why Us</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#newsletter" class="nav-cta">Get Deals →</a>
+  </div>
+</nav>
+ 
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-badge"><span></span> Trusted Wellness Partner</span>
+    <h1>Live Your <em>Healthiest</em><br>Life, Starting Today</h1>
+    <p>Discover expertly curated wellness products, fitness essentials, and nutrition solutions — handpicked to help you thrive in body, mind, and spirit.</p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Shop Top Picks →</a>
+      <a href="#categories" class="btn-secondary">Explore Categories</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="logo-showcase">
+      <!-- SVG recreation of the Healthy Living Hub logo -->
+      <svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg" style="width:82%;height:82%">
+        <!-- Outer circle / leaf wrap -->
+        <defs>
+          <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#2d9e6b"/>
+            <stop offset="100%" style="stop-color:#0f6e56"/>
+          </linearGradient>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f4a822"/>
+            <stop offset="100%" style="stop-color:#d4870e"/>
+          </linearGradient>
+          <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#5cc98a"/>
+            <stop offset="100%" style="stop-color:#1d9e75"/>
+          </linearGradient>
+        </defs>
+        <!-- Sun rays (top right) -->
+        <g transform="translate(185,75)">
+          <circle cx="0" cy="0" r="22" fill="url(#goldGrad)" opacity="0.9"/>
+          <line x1="0" y1="-32" x2="0" y2="-40" stroke="#f4a822" stroke-width="4" stroke-linecap="round"/>
+          <line x1="22" y1="-22" x2="28" y2="-28" stroke="#f4a822" stroke-width="4" stroke-linecap="round"/>
+          <line x1="32" y1="0" x2="40" y2="0" stroke="#f4a822" stroke-width="4" stroke-linecap="round"/>
+          <line x1="22" y1="22" x2="28" y2="28" stroke="#f4a822" stroke-width="4" stroke-linecap="round"/>
+          <line x1="-22" y1="-22" x2="-28" y2="-28" stroke="#f4a822" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <!-- Big outer leaf (left) -->
+        <path d="M 60,200 Q 20,120 80,60 Q 140,100 120,190 Z" fill="url(#greenGrad)" opacity="0.85"/>
+        <!-- Big outer leaf (right) -->
+        <path d="M 230,190 Q 270,110 210,55 Q 155,95 175,185 Z" fill="url(#leafGrad)" opacity="0.8"/>
+        <!-- Wave water element -->
+        <path d="M 70,200 Q 110,185 150,195 Q 190,205 230,195 Q 220,230 150,235 Q 80,230 70,200Z" fill="#5bc4ef" opacity="0.5"/>
+        <!-- Central stem -->
+        <path d="M 150,215 Q 150,155 150,100" stroke="url(#greenGrad)" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <!-- Left branch leaf -->
+        <path d="M 150,145 Q 110,130 100,105 Q 130,95 155,130 Z" fill="url(#leafGrad)"/>
+        <!-- Right branch leaf -->
+        <path d="M 150,160 Q 190,145 198,120 Q 168,110 148,148 Z" fill="url(#greenGrad)"/>
+        <!-- Top leaf -->
+        <path d="M 150,115 Q 135,85 148,65 Q 165,85 150,115 Z" fill="#5cc98a"/>
+        <!-- Figure person (center) -->
+        <circle cx="150" cy="108" r="10" fill="#1d9e75"/>
+        <path d="M 135,140 Q 150,130 165,140" stroke="#1d9e75" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- Small figure right -->
+        <circle cx="190" cy="160" r="7" fill="url(#leafGrad)" opacity="0.8"/>
+        <!-- Text -->
+        <text x="150" y="262" text-anchor="middle" font-family="'DM Sans', sans-serif" font-weight="600" font-size="18" fill="#0f6e56" letter-spacing="1">HEALTHY LIVING</text>
+        <text x="150" y="287" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="700" font-size="26" fill="#0c3547">HUB</text>
+        <text x="150" y="310" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="9" fill="#5a7268" letter-spacing="3">WELLNESS · COMMUNITY · GROWTH</text>
+      </svg>
+    </div>
+    <div class="stat-pill s1">
+      <div class="stat-icon si-green">⭐</div>
+      <div><div style="font-size:0.95rem;color:#0f6e56">4.9/5</div><div style="font-size:0.68rem;color:#5a7268;font-weight:400">Customer Rating</div></div>
+    </div>
+    <div class="stat-pill s2">
+      <div class="stat-icon si-gold">💰</div>
+      <div><div style="font-size:0.95rem;color:#0f6e56">Up to 35%</div><div style="font-size:0.68rem;color:#5a7268;font-weight:400">Commission</div></div>
+    </div>
+    <div class="stat-pill s3">
+      <div class="stat-icon si-green">🌿</div>
+      <div><div style="font-size:0.95rem;color:#0f6e56">500+ Products</div><div style="font-size:0.68rem;color:#5a7268;font-weight:400">Curated for you</div></div>
+    </div>
+  </div>
+</section>
+ 
+<!-- TRUST SCROLLBAR -->
+<div class="trust-bar">
+  <div class="trust-scroll">
+    <div class="trust-item">✅ Certified Organic Partners</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">🏆 #1 Wellness Affiliate Network</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">🔒 Secure & Trusted Checkout</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">🚚 Free Shipping on $50+</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">💰 30-Day Money Back Guarantee</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">🌿 100% Natural Ingredients</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">⚡ Weekly New Arrivals</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">✅ Certified Organic Partners</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">🏆 #1 Wellness Affiliate Network</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">🔒 Secure & Trusted Checkout</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">🚚 Free Shipping on $50+</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">💰 30-Day Money Back Guarantee</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">🌿 100% Natural Ingredients</div>
+    <div class="trust-dot"></div>
+    <div class="trust-item">⚡ Weekly New Arrivals</div>
+    <div class="trust-dot"></div>
+  </div>
+</div>
+ 
+<!-- COMMISSION STATS -->
+<section class="commission" id="commission">
+  <div class="comm-inner">
+    <div class="comm-stat">
+      <span class="comm-number">35%</span>
+      <span class="comm-label">Average Commission Rate</span>
+    </div>
+    <div class="comm-stat">
+      <span class="comm-number">50K+</span>
+      <span class="comm-label">Happy Customers</span>
+    </div>
+    <div class="comm-stat">
+      <span class="comm-number">500+</span>
+      <span class="comm-label">Wellness Products</span>
+    </div>
+    <div class="comm-stat">
+      <span class="comm-number">$2M+</span>
+      <span class="comm-label">Paid to Affiliates</span>
+    </div>
+  </div>
+</section>
+ 
+<!-- CATEGORIES -->
+<section class="categories" id="categories">
+  <div class="section-header centered">
+    <span class="section-label">Browse Categories</span>
+    <h2 class="section-title">Wellness for Every Dimension<br>of Your Life</h2>
+    <p class="section-sub">From supplements to fitness gear, organic foods to mindfulness tools — everything you need to live well.</p>
+  </div>
+  <div class="cat-grid">
+    <a class="cat-card" href="#">
+      <span class="cat-icon">💊</span>
+      <div class="cat-name">Supplements</div>
+      <div class="cat-count">142 products</div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cat-icon">🏋️</span>
+      <div class="cat-name">Fitness Gear</div>
+      <div class="cat-count">98 products</div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cat-icon">🥗</span>
+      <div class="cat-name">Organic Food</div>
+      <div class="cat-count">87 products</div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cat-icon">🧘</span>
+      <div class="cat-name">Mindfulness</div>
+      <div class="cat-count">64 products</div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cat-icon">💆</span>
+      <div class="cat-name">Skincare</div>
+      <div class="cat-count">73 products</div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cat-icon">😴</span>
+      <div class="cat-name">Sleep Health</div>
+      <div class="cat-count">41 products</div>
+    </a>
+  </div>
+</section>
+ 
+<!-- FEATURED PRODUCTS -->
+<section class="products" id="products">
+  <div class="section-header">
+    <span class="section-label">Top Picks</span>
+    <h2 class="section-title">Best-Selling Wellness Products</h2>
+    <p class="section-sub">Handpicked by our community for maximum results and honest quality.</p>
+  </div>
+  <div class="products-grid">
+ 
+    <div class="product-card">
+      <span class="product-badge">🔥 Best Seller</span>
+      <div class="product-img">🌿</div>
+      <div class="product-body">
+        <div class="product-tag">Supplements</div>
+        <div class="product-stars">★★★★★</div>
+        <div class="product-name">Daily Greens Superfood Blend</div>
+        <div class="product-desc">25 superfoods in one scoop. Energy, gut health & immunity in 30 seconds a day.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">$49.99</div>
+            <div class="product-commission">Earn $17.50 / sale</div>
+          </div>
+          <a href="#" class="btn-buy">Shop Now</a>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="product-card">
+      <span class="product-badge">⭐ Top Rated</span>
+      <div class="product-img">🧘</div>
+      <div class="product-body">
+        <div class="product-tag">Mindfulness</div>
+        <div class="product-stars">★★★★★</div>
+        <div class="product-name">Premium Meditation Bundle</div>
+        <div class="product-desc">Guided app, essential oils & silk eye mask. Your complete calm-in-a-box.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">$89.00</div>
+            <div class="product-commission">Earn $31.15 / sale</div>
+          </div>
+          <a href="#" class="btn-buy">Shop Now</a>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="product-card">
+      <div class="product-img">💪</div>
+      <div class="product-body">
+        <div class="product-tag">Fitness</div>
+        <div class="product-stars">★★★★☆</div>
+        <div class="product-name">Resistance Band Pro Set</div>
+        <div class="product-desc">5 levels, door anchor & workout guide. Gym-quality results at home.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">$34.95</div>
+            <div class="product-commission">Earn $12.23 / sale</div>
+          </div>
+          <a href="#" class="btn-buy">Shop Now</a>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="product-card">
+      <span class="product-badge">🌙 New</span>
+      <div class="product-img">😴</div>
+      <div class="product-body">
+        <div class="product-tag">Sleep</div>
+        <div class="product-stars">★★★★★</div>
+        <div class="product-name">Deep Sleep Magnesium Gummies</div>
+        <div class="product-desc">Natural melatonin-free formula. Wake up rested without groggy mornings.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">$29.99</div>
+            <div class="product-commission">Earn $10.50 / sale</div>
+          </div>
+          <a href="#" class="btn-buy">Shop Now</a>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="product-card">
+      <div class="product-img">🫐</div>
+      <div class="product-body">
+        <div class="product-tag">Nutrition</div>
+        <div class="product-stars">★★★★★</div>
+        <div class="product-name">Organic Protein Powder — Berry</div>
+        <div class="product-desc">25g clean plant protein. No fillers, no junk. Just real food fuel.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">$54.00</div>
+            <div class="product-commission">Earn $18.90 / sale</div>
+          </div>
+          <a href="#" class="btn-buy">Shop Now</a>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="product-card">
+      <div class="product-img">💆</div>
+      <div class="product-body">
+        <div class="product-tag">Skincare</div>
+        <div class="product-stars">★★★★☆</div>
+        <div class="product-name">Botanical Glow Serum</div>
+        <div class="product-desc">12 plant actives for luminous skin. Vegan, cruelty-free & dermatologist tested.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">$44.00</div>
+            <div class="product-commission">Earn $15.40 / sale</div>
+          </div>
+          <a href="#" class="btn-buy">Shop Now</a>
+        </div>
+      </div>
+    </div>
+ 
+  </div>
+</section>
+ 
+<!-- WHY US -->
+<section class="why" id="why">
+  <div class="why-grid">
+    <div>
+      <span class="section-label">Why Choose Us</span>
+      <h2 class="section-title">We Do the Research<br>So You Don't Have To</h2>
+      <p class="section-sub" style="margin-bottom:2rem">Every product on Healthy Living Hub passes a rigorous 7-point quality check before we recommend it to our community.</p>
+      <a href="#products" class="btn-primary" style="display:inline-flex">Explore Products →</a>
+    </div>
+    <div class="why-features">
+      <div class="why-feat">
+        <div class="feat-icon">🔬</div>
+        <div>
+          <div class="feat-title">Science-Backed Selection</div>
+          <div class="feat-desc">Every product is vetted by certified nutritionists and wellness experts before listing.</div>
+        </div>
+      </div>
+      <div class="why-feat">
+        <div class="feat-icon">🌱</div>
+        <div>
+          <div class="feat-title">Certified Organic & Clean</div>
+          <div class="feat-desc">We partner only with brands that meet strict organic, non-GMO, and clean ingredient standards.</div>
+        </div>
+      </div>
+      <div class="why-feat">
+        <div class="feat-icon">💸</div>
+        <div>
+          <div class="feat-title">Generous Affiliate Commissions</div>
+          <div class="feat-desc">Earn 25–35% per sale. Real-time tracking, monthly payouts, no minimum threshold.</div>
+        </div>
+      </div>
+      <div class="why-feat">
+        <div class="feat-icon">🤝</div>
+        <div>
+          <div class="feat-title">Community-First Philosophy</div>
+          <div class="feat-desc">Our reviews are real and unsponsored. We only promote what our team actually uses.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="reviews">
+  <div class="section-header centered">
+    <span class="section-label">Community Love</span>
+    <h2 class="section-title">Real Results, Real People</h2>
+    <p class="section-sub">Over 50,000 people have transformed their wellness journey with our recommendations.</p>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">The Daily Greens Blend changed my mornings completely. I have so much more energy and my digestion has improved dramatically. Worth every penny.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">SR</div>
+        <div>
+          <div class="testi-name">Sarah R.</div>
+          <div class="testi-role">Yoga Instructor, Austin TX</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">I've been an affiliate for 6 months and earned over $4,000. The products sell themselves because they're genuinely great. The commission structure is the best I've seen.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">MK</div>
+        <div>
+          <div class="testi-name">Marcus K.</div>
+          <div class="testi-role">Wellness Blogger</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">Finally a wellness brand that doesn't overpromise. The sleep gummies actually work, and the customer service is incredible. I recommend HLH to all my clients.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">AP</div>
+        <div>
+          <div class="testi-name">Aisha P.</div>
+          <div class="testi-role">Certified Health Coach</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- NEWSLETTER -->
+<section class="newsletter" id="newsletter">
+  <h2>Get Exclusive Wellness Deals<br>Every Week</h2>
+  <p>Join 25,000+ subscribers getting early access to sales, new arrivals, and expert wellness tips — straight to your inbox.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="your@email.com">
+    <button type="button">Subscribe Free</button>
+  </div>
+</section>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>🌿 Healthy Living Hub</h3>
+      <p>Empowering individuals to live healthier, happier lives through trusted wellness products and a supportive community.</p>
+      <p style="margin-top:1rem;font-size:0.78rem;color:rgba(255,255,255,0.4)">Wellness · Community · Growth</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="#">Supplements</a>
+      <a href="#">Fitness Gear</a>
+      <a href="#">Organic Food</a>
+      <a href="#">Mindfulness</a>
+      <a href="#">Skincare</a>
+      <a href="#">Sleep Health</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About Us</a>
+      <a href="#">Our Mission</a>
+      <a href="#">Affiliate Program</a>
+      <a href="#">Blog</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="#">FAQ</a>
+      <a href="#">Shipping Policy</a>
+      <a href="#">Returns</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Healthy Living Hub. All rights reserved.</span>
+    <span style="color:rgba(255,255,255,0.4)">Made with 💚 for your wellness</span>
+  </div>
+  <p class="disclaimer">* Affiliate Disclosure: Healthy Living Hub participates in affiliate marketing programs. We may earn a commission when you purchase through our links, at no additional cost to you. All recommendations are based on honest reviews and personal use.</p>
+</footer>
+ 
+<script>
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+  // Newsletter button
+  document.querySelector('.newsletter-form button').addEventListener('click', function() {
+    const input = document.querySelector('.newsletter-form input');
+    if (input.value.includes('@')) {
+      this.textContent = '✓ You\'re in!';
+      this.style.background = '#0f6e56';
+      input.value = '';
+    } else {
+      input.style.outline = '2px solid #d4870e';
+      setTimeout(() => input.style.outline = '', 1500);
+    }
+  });
+</script>
+</body>
+</html>

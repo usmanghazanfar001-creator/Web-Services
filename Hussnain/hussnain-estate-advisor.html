@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hussnain Estate Advisor</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%230D1B2A'/%3E%3Cpolygon points='32,10 52,28 52,54 38,54 38,40 26,40 26,54 12,54 12,28' fill='%23C9A84C'/%3E%3Crect x='27' y='41' width='10' height='13' fill='%230D1B2A'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%230D1B2A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8CC80;
+    --gold-dark: #9A7830;
+    --navy: #0D1B2A;
+    --navy-mid: #1A3050;
+    --navy-light: #2A4A6B;
+    --cream: #F8F5EF;
+    --cream-dark: #EDE8DC;
+    --text-dark: #0D1B2A;
+    --text-mid: #3D5270;
+    --text-light: #7A8FA8;
+    --white: #FFFFFF;
+    --radius: 4px;
+    --radius-lg: 8px;
+    --shadow: 0 4px 24px rgba(13,27,42,0.12);
+    --shadow-lg: 0 12px 48px rgba(13,27,42,0.18);
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(13,27,42,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .nav-logo {
+    width: 42px; height: 42px; background: var(--gold);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; color: var(--navy);
+  }
+  .nav-name { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--white); line-height: 1.2; }
+  .nav-name span { display: block; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 400; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 13px; letter-spacing: 0.5px; font-weight: 400; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    background: var(--gold); color: var(--navy); padding: 9px 22px;
+    border-radius: var(--radius); font-size: 13px; font-weight: 600;
+    text-decoration: none; letter-spacing: 0.3px; transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--gold-light); }
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; }
+  .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--white); margin: 5px 0; transition: 0.3s; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; position: relative;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #1e3a5a 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 100px 2rem 4rem;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 700px; text-align: center; }
+  .hero-badge {
+    display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold); font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    padding: 7px 18px; border-radius: 50px; margin-bottom: 2rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 5vw, 4rem);
+    color: var(--white); line-height: 1.1; margin-bottom: 1.25rem; font-weight: 700;
+  }
+  .hero h1 em { color: var(--gold); font-style: normal; }
+  .hero p { font-size: 1.05rem; color: rgba(255,255,255,0.65); max-width: 520px; margin: 0 auto 2.5rem; }
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--gold); color: var(--navy); padding: 14px 32px;
+    border-radius: var(--radius); font-weight: 600; font-size: 14px; text-decoration: none;
+    transition: all 0.2s; display: inline-block; letter-spacing: 0.3px;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-outline {
+    border: 1.5px solid rgba(201,168,76,0.5); color: var(--gold); padding: 13px 32px;
+    border-radius: var(--radius); font-weight: 500; font-size: 14px; text-decoration: none;
+    transition: all 0.2s; display: inline-block;
+  }
+  .btn-outline:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+  .hero-stats {
+    display: flex; gap: 3rem; justify-content: center; margin-top: 4rem;
+    padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat strong { display: block; font-size: 2rem; font-family: 'Playfair Display', serif; color: var(--gold); font-weight: 700; }
+  .hero-stat span { font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; }
+
+  /* SECTIONS */
+  section { padding: 5rem 2rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 0.75rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.75rem, 3vw, 2.5rem); color: var(--navy); font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
+  .section-sub { font-size: 1rem; color: var(--text-mid); max-width: 560px; line-height: 1.7; }
+  .divider { width: 48px; height: 3px; background: var(--gold); margin: 1.25rem 0; border-radius: 2px; }
+
+  /* SERVICES */
+  .services-bg { background: var(--white); }
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .service-card {
+    border: 1px solid rgba(13,27,42,0.08); border-radius: var(--radius-lg);
+    padding: 2rem 1.75rem; background: var(--cream); transition: all 0.25s;
+  }
+  .service-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); border-color: var(--gold-light); }
+  .service-icon {
+    width: 52px; height: 52px; background: var(--navy); border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;
+    font-size: 22px;
+  }
+  .service-card h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--navy); margin-bottom: 0.5rem; font-weight: 600; }
+  .service-card p { font-size: 0.875rem; color: var(--text-mid); line-height: 1.7; }
+
+  /* FEATURED PROPERTIES */
+  .properties-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1.75rem; margin-top: 3rem; }
+  .prop-card {
+    background: var(--white); border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid rgba(13,27,42,0.08); transition: all 0.25s;
+  }
+  .prop-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+  .prop-image {
+    height: 200px; background: var(--navy-mid); position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 60px; overflow: hidden;
+  }
+  .prop-badge {
+    position: absolute; top: 12px; left: 12px;
+    background: var(--gold); color: var(--navy); font-size: 11px; font-weight: 700;
+    padding: 4px 12px; border-radius: 50px; letter-spacing: 0.5px;
+  }
+  .prop-body { padding: 1.5rem; }
+  .prop-price { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); font-weight: 700; }
+  .prop-name { font-size: 1rem; font-weight: 600; color: var(--navy); margin: 0.25rem 0; }
+  .prop-loc { font-size: 12px; color: var(--text-light); margin-bottom: 1rem; }
+  .prop-specs { display: flex; gap: 1rem; padding-top: 1rem; border-top: 1px solid rgba(13,27,42,0.07); }
+  .prop-spec { font-size: 12px; color: var(--text-mid); }
+  .prop-spec strong { display: block; font-size: 14px; color: var(--navy); font-weight: 600; }
+
+  /* WHY US */
+  .why-bg { background: var(--navy); }
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .why-list { list-style: none; margin-top: 2rem; }
+  .why-item { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-start; }
+  .why-check { width: 28px; height: 28px; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; margin-top: 2px; }
+  .why-item h4 { font-size: 0.95rem; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+  .why-item p { font-size: 0.83rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+  .why-visual {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.15);
+    border-radius: var(--radius-lg); padding: 2.5rem; text-align: center;
+  }
+  .why-visual .big-num { font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--gold); font-weight: 700; line-height: 1; }
+  .why-visual p { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 0.75rem; }
+  .why-visual .sub { display: block; font-size: 0.75rem; color: rgba(201,168,76,0.6); letter-spacing: 2px; text-transform: uppercase; margin-top: 0.5rem; }
+  .why-title { font-family: 'Playfair Display', serif; color: var(--white); }
+
+  /* MAP + BOOK NOW */
+  .location-bg { background: var(--cream-dark); }
+  .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; margin-top: 3rem; }
+  .map-wrap {
+    background: var(--navy); border-radius: var(--radius-lg); overflow: hidden;
+    box-shadow: var(--shadow); height: 420px; position: relative;
+  }
+  .map-iframe { width: 100%; height: 100%; border: none; }
+  .map-overlay {
+    position: absolute; bottom: 16px; left: 16px; right: 16px;
+    background: rgba(13,27,42,0.92); border: 1px solid rgba(201,168,76,0.3);
+    border-radius: var(--radius); padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .map-overlay .dot { width: 10px; height: 10px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+  .map-overlay p { font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.4; }
+  .map-overlay strong { color: var(--white); display: block; font-size: 13px; }
+  .book-form {
+    background: var(--white); border-radius: var(--radius-lg);
+    padding: 2.5rem; box-shadow: var(--shadow);
+    border: 1px solid rgba(13,27,42,0.07);
+  }
+  .book-form h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--navy); margin-bottom: 0.25rem; }
+  .book-form p { font-size: 13px; color: var(--text-light); margin-bottom: 1.5rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group { margin-bottom: 1.1rem; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-dark); margin-bottom: 5px; letter-spacing: 0.3px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 14px; background: var(--cream);
+    border: 1.5px solid rgba(13,27,42,0.12); border-radius: var(--radius);
+    font-size: 13px; color: var(--text-dark); font-family: 'Inter', sans-serif;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .form-group select { cursor: pointer; }
+  .btn-form {
+    width: 100%; background: var(--navy); color: var(--white); padding: 14px;
+    border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s;
+    letter-spacing: 0.3px; margin-top: 0.5rem;
+  }
+  .btn-form:hover { background: var(--gold); color: var(--navy); }
+
+  /* CONTACT */
+  .contact-bg { background: var(--white); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: start; margin-top: 3rem; }
+  .contact-info-item { display: flex; gap: 1rem; margin-bottom: 2rem; }
+  .contact-icon { width: 44px; height: 44px; background: var(--cream); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .contact-info-item h4 { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .contact-info-item p { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .contact-form { background: var(--cream); border-radius: var(--radius-lg); padding: 2.5rem; border: 1px solid rgba(13,27,42,0.07); }
+
+  /* SOCIAL */
+  .social-section { background: var(--navy); padding: 3rem 2rem; text-align: center; }
+  .social-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--white); margin-bottom: 0.5rem; }
+  .social-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 2rem; }
+  .social-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .social-btn {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius);
+    padding: 11px 22px; text-decoration: none; color: var(--white);
+    font-size: 13px; font-weight: 500; transition: all 0.2s; background: rgba(255,255,255,0.04);
+  }
+  .social-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.1); color: var(--gold); }
+  .social-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* FOOTER */
+  footer { background: #08111C; color: rgba(255,255,255,0.45); text-align: center; padding: 1.5rem; font-size: 12px; }
+  footer strong { color: var(--gold); }
+
+  /* SUCCESS MSG */
+  .form-success {
+    display: none; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.4);
+    border-radius: var(--radius); padding: 12px 16px; text-align: center;
+    font-size: 13px; color: var(--navy); margin-top: 1rem; font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .nav-links, .nav-cta { display: none; }
+    .nav-toggle { display: block; }
+    .hero-stats { gap: 1.5rem; }
+    .hero-stat strong { font-size: 1.5rem; }
+    .why-grid, .location-grid, .contact-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .map-wrap { height: 300px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-brand">
+    <div class="nav-logo">H</div>
+    <div class="nav-name">Hussnain Estate<span>Advisor</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#properties">Properties</a></li>
+    <li><a href="#location">Location</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#book" class="nav-cta">Book Consultation</a>
+  <button class="nav-toggle" aria-label="Menu" onclick="toggleMenu(this)">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Pakistan's Trusted Real Estate Advisor</div>
+    <h1>Find Your <em>Dream</em> Property with Expert Guidance</h1>
+    <p>Hussnain Estate Advisor brings decades of market expertise to help you buy, sell, or invest in premium properties across Pakistan.</p>
+    <div class="hero-btns">
+      <a href="#properties" class="btn-primary">View Properties</a>
+      <a href="#book" class="btn-outline">Book Appointment</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>500+</strong><span>Properties Sold</span></div>
+      <div class="hero-stat"><strong>12+</strong><span>Years Experience</span></div>
+      <div class="hero-stat"><strong>98%</strong><span>Client Satisfaction</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="services-bg">
+  <div class="container">
+    <p class="section-label">What We Offer</p>
+    <h2 class="section-title">Comprehensive Real Estate Services</h2>
+    <div class="divider"></div>
+    <p class="section-sub">From residential homes to commercial investments, we provide end-to-end real estate advisory tailored to your needs.</p>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">🏠</div>
+        <h3>Residential Properties</h3>
+        <p>Find your perfect home — apartments, houses, villas, and plots across premium locations in Pakistan.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🏢</div>
+        <h3>Commercial Real Estate</h3>
+        <p>Office spaces, plazas, retail units, and warehouses strategically located for business success.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">📊</div>
+        <h3>Investment Advisory</h3>
+        <p>Expert market analysis and portfolio strategy to maximize your real estate investment returns.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">📋</div>
+        <h3>Legal & Documentation</h3>
+        <p>Complete guidance through property registration, NOCs, transfer deeds, and all legal procedures.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🔑</div>
+        <h3>Property Management</h3>
+        <p>Hassle-free management of your rental properties — tenant screening, maintenance, and rent collection.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🌐</div>
+        <h3>Overseas Pakistani Services</h3>
+        <p>Trusted real estate services for Pakistanis abroad — invest safely from anywhere in the world.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPERTIES -->
+<section id="properties">
+  <div class="container">
+    <p class="section-label">Featured Listings</p>
+    <h2 class="section-title">Premium Properties Available</h2>
+    <div class="divider"></div>
+    <div class="properties-grid">
+      <div class="prop-card">
+        <div class="prop-image" style="background: linear-gradient(145deg, #1A3050, #0D1B2A);">
+          🏡
+          <span class="prop-badge">For Sale</span>
+        </div>
+        <div class="prop-body">
+          <div class="prop-price">PKR 2.8 Crore</div>
+          <div class="prop-name">Modern 5 Marla House</div>
+          <div class="prop-loc">📍 Bahria Town Phase 7, Rawalpindi</div>
+          <div class="prop-specs">
+            <div class="prop-spec"><strong>4</strong>Beds</div>
+            <div class="prop-spec"><strong>3</strong>Baths</div>
+            <div class="prop-spec"><strong>5 Marla</strong>Area</div>
+          </div>
+        </div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-image" style="background: linear-gradient(145deg, #2A4A2A, #1A3020);">
+          🏘
+          <span class="prop-badge">For Sale</span>
+        </div>
+        <div class="prop-body">
+          <div class="prop-price">PKR 5.5 Crore</div>
+          <div class="prop-name">Luxury 10 Marla Villa</div>
+          <div class="prop-loc">📍 DHA Phase 2, Islamabad</div>
+          <div class="prop-specs">
+            <div class="prop-spec"><strong>5</strong>Beds</div>
+            <div class="prop-spec"><strong>4</strong>Baths</div>
+            <div class="prop-spec"><strong>10 Marla</strong>Area</div>
+          </div>
+        </div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-image" style="background: linear-gradient(145deg, #3A2A10, #2A1A08);">
+          🏗
+          <span class="prop-badge">Investment</span>
+        </div>
+        <div class="prop-body">
+          <div class="prop-price">PKR 85 Lakh</div>
+          <div class="prop-name">Residential Plot 5 Marla</div>
+          <div class="prop-loc">📍 Capital Smart City, Islamabad</div>
+          <div class="prop-specs">
+            <div class="prop-spec"><strong>Plot</strong>Type</div>
+            <div class="prop-spec"><strong>5 Marla</strong>Size</div>
+            <div class="prop-spec"><strong>Corner</strong>Location</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top: 2.5rem;">
+      <a href="#contact" class="btn-primary" style="background:var(--navy); color:var(--white);">Inquire About More Properties</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="why-bg">
+  <div class="container">
+    <div class="why-grid">
+      <div>
+        <p class="section-label" style="color:rgba(201,168,76,0.7)">Why Choose Us</p>
+        <h2 class="section-title why-title">Trusted by Families Across Pakistan</h2>
+        <div class="divider"></div>
+        <ul class="why-list">
+          <li class="why-item">
+            <div class="why-check">✦</div>
+            <div><h4>Market-Verified Listings</h4><p>Every property we list is personally verified for legal status, fair pricing, and documentation completeness.</p></div>
+          </li>
+          <li class="why-item">
+            <div class="why-check">✦</div>
+            <div><h4>Transparent Transactions</h4><p>No hidden fees, no surprises. We guide you through every step with full financial transparency.</p></div>
+          </li>
+          <li class="why-item">
+            <div class="why-check">✦</div>
+            <div><h4>Local Expertise, National Reach</h4><p>Deep knowledge of Islamabad, Rawalpindi, and major cities — with connections across all housing societies.</p></div>
+          </li>
+          <li class="why-item">
+            <div class="why-check">✦</div>
+            <div><h4>Post-Sale Support</h4><p>Our relationship doesn't end at signing — we assist with utility transfers, possession, and move-in.</p></div>
+          </li>
+        </ul>
+      </div>
+      <div class="why-visual">
+        <div class="big-num">12+</div>
+        <span class="sub">Years of Excellence</span>
+        <p>Trusted real estate advisor serving clients since 2012</p>
+        <div style="margin-top:2rem; padding-top:2rem; border-top:1px solid rgba(201,168,76,0.15); display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; text-align:center;">
+          <div><div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);font-weight:700;">500+</div><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Deals Closed</div></div>
+          <div><div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);font-weight:700;">200+</div><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Happy Families</div></div>
+          <div><div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);font-weight:700;">15+</div><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Societies</div></div>
+          <div><div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);font-weight:700;">5★</div><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Avg Rating</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION + BOOK NOW -->
+<section id="location" class="location-bg">
+  <div class="container">
+    <p class="section-label">Find Us</p>
+    <h2 class="section-title">Our Location & Book a Visit</h2>
+    <div class="divider"></div>
+    <div class="location-grid">
+      <!-- MAP -->
+      <div>
+        <div class="map-wrap">
+          <iframe
+            class="map-iframe"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d212526.19760063684!2d72.82505!3d33.72148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfbfd07891722f%3A0x6789d6df9d5a0f99!2sIslamabad%2C+Islamabad+Capital+Territory%2C+Pakistan!5e0!3m2!1sen!2s!4v1630000000000"
+            allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Hussnain Estate Advisor Office Location - Islamabad">
+          </iframe>
+          <div class="map-overlay">
+            <div class="dot"></div>
+            <p><strong>Hussnain Estate Advisor</strong>Islamabad, Pakistan · Open Mon–Sat, 9am–7pm</p>
+          </div>
+        </div>
+        <div style="margin-top:1.25rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div style="background:var(--white);padding:1rem 1.25rem;border-radius:var(--radius);border:1px solid rgba(13,27,42,0.08);">
+            <div style="font-size:11px;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Phone</div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">+92 300 000 0000</div>
+          </div>
+          <div style="background:var(--white);padding:1rem 1.25rem;border-radius:var(--radius);border:1px solid rgba(13,27,42,0.08);">
+            <div style="font-size:11px;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">WhatsApp</div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">+92 300 000 0000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOK NOW FORM -->
+      <div id="book" class="book-form">
+        <h3>Book a Consultation</h3>
+        <p>Schedule a free meeting with our advisor at your convenience.</p>
+        <form id="bookingForm" onsubmit="submitBooking(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" placeholder="Your full name" required>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" placeholder="+92 300 0000000" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="your@email.com">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Preferred Date</label>
+              <input type="date" required>
+            </div>
+            <div class="form-group">
+              <label>Preferred Time</label>
+              <select required>
+                <option value="">Select time</option>
+                <option>9:00 AM</option>
+                <option>10:00 AM</option>
+                <option>11:00 AM</option>
+                <option>12:00 PM</option>
+                <option>2:00 PM</option>
+                <option>3:00 PM</option>
+                <option>4:00 PM</option>
+                <option>5:00 PM</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Purpose of Visit</label>
+            <select required>
+              <option value="">Select purpose</option>
+              <option>Buy a Property</option>
+              <option>Sell My Property</option>
+              <option>Investment Advisory</option>
+              <option>Rental Inquiry</option>
+              <option>General Consultation</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-form">📅 Book My Appointment</button>
+          <div id="bookSuccess" class="form-success">✅ Appointment booked! We'll confirm via WhatsApp shortly.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT FORM -->
+<section id="contact" class="contact-bg">
+  <div class="container">
+    <p class="section-label">Get In Touch</p>
+    <h2 class="section-title">Send Us a Message</h2>
+    <div class="divider"></div>
+    <div class="contact-grid">
+      <div>
+        <p class="section-sub" style="margin-bottom:2rem;">We're here to answer your questions about any property or service. Reach out and we'll get back to you within 24 hours.</p>
+        <div class="contact-info-item">
+          <div class="contact-icon">📍</div>
+          <div><h4>Office Address</h4><p>Main Office, Blue Area / F-7<br>Islamabad, Pakistan</p></div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">📞</div>
+          <div><h4>Phone & WhatsApp</h4><p>+92 300 000 0000<br>Available 9am – 7pm, Mon–Sat</p></div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">✉️</div>
+          <div><h4>Email</h4><p>info@hussnainestateadvisor.com<br>We reply within 24 hours</p></div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">⏰</div>
+          <div><h4>Office Hours</h4><p>Monday – Saturday: 9:00 AM – 7:00 PM<br>Sunday: By appointment only</p></div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <form id="contactForm" onsubmit="submitContact(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Your Name</label>
+              <input type="text" placeholder="Full name" required>
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" placeholder="+92 300 0000000">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <select>
+              <option>Property Inquiry</option>
+              <option>Investment Advice</option>
+              <option>Selling My Property</option>
+              <option>Rental Inquiry</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Your Message</label>
+            <textarea placeholder="Tell us about the property you're looking for, your budget, preferred location, and any other details..." required></textarea>
+          </div>
+          <button type="submit" class="btn-form">Send Message ✉️</button>
+          <div id="contactSuccess" class="form-success">✅ Message sent! We'll be in touch within 24 hours.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL LINKS -->
+<section class="social-section">
+  <div class="container">
+    <h2 class="social-title">Follow Us on Social Media</h2>
+    <p class="social-sub">Stay updated with new listings, market insights, and property news</p>
+    <div class="social-links">
+      <!-- Facebook -->
+      <a href="#" class="social-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        Facebook
+      </a>
+      <!-- Instagram -->
+      <a href="#" class="social-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Instagram
+      </a>
+      <!-- WhatsApp -->
+      <a href="https://wa.me/923000000000" class="social-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <!-- YouTube -->
+      <a href="#" class="social-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        YouTube
+      </a>
+      <!-- LinkedIn -->
+      <a href="#" class="social-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <!-- TikTok -->
+      <a href="#" class="social-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        TikTok
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2024 <strong>Hussnain Estate Advisor</strong> · Islamabad, Pakistan · All rights reserved</p>
+  <p style="margin-top:0.4rem;">Real Estate Advisory · Residential · Commercial · Investment</p>
+</footer>
+
+<script>
+  function toggleMenu(btn) {
+    const spans = btn.querySelectorAll('span');
+    btn.classList.toggle('open');
+  }
+
+  function submitBooking(e) {
+    e.preventDefault();
+    const msg = document.getElementById('bookSuccess');
+    msg.style.display = 'block';
+    e.target.reset();
+    setTimeout(() => { msg.style.display = 'none'; }, 5000);
+  }
+
+  function submitContact(e) {
+    e.preventDefault();
+    const msg = document.getElementById('contactSuccess');
+    msg.style.display = 'block';
+    e.target.reset();
+    setTimeout(() => { msg.style.display = 'none'; }, 5000);
+  }
+
+  // Smooth nav highlight
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#'+current ? 'var(--gold)' : '';
+    });
+  });
+</script>
+</body>
+</html>

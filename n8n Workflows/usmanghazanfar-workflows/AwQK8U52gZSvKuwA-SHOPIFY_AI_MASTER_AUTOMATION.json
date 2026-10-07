@@ -1,0 +1,4209 @@
+{
+  "name": "SHOPIFY AI MASTER AUTOMATION",
+  "nodes": [
+    {
+      "id": "d54f880a-c021-4d0a-ac65-0b77dd526a1e",
+      "name": "SHOPIFY - Order Webhook",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        480
+      ],
+      "parameters": {
+        "topic": "orders/create"
+      },
+      "webhookId": "4646d31f-43e5-49d1-abcc-714eb0e9ebcd"
+    },
+    {
+      "id": "e62bb5fe-f697-4af4-a464-8f6dafe8df8e",
+      "name": "MASTER - Normalize Order",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        480
+      ],
+      "parameters": {
+        "jsCode": "const order = $json;\nconst customer = order.customer || {};\nconst lineItems = Array.isArray(order.line_items) ? order.line_items : [];\nconst quantity = lineItems.reduce((s, li) => s + (Number(li.quantity) || 0), 0);\nconst shipping = Number((order.total_shipping_price_set && order.total_shipping_price_set.shop_money && order.total_shipping_price_set.shop_money.amount) || 0);\nreturn [{ json: {\n  event_type: 'ORDER',\n  execution_id: $execution.id,\n  timestamp: new Date().toISOString(),\n  shopify_order_id: String(order.id || ''),\n  order_name: order.name || '',\n  order_value: Number(order.total_price || 0),\n  subtotal: Number(order.subtotal_price || 0),\n  tax: Number(order.total_tax || 0),\n  shipping_cost: shipping,\n  payment_status: order.financial_status || '',\n  fulfillment_status: order.fulfillment_status || 'unfulfilled',\n  tracking_number: '',\n  order_created_at: order.created_at || '',\n  order_updated_at: order.updated_at || '',\n  products: lineItems.map(li => li.title).join(', '),\n  quantity,\n  line_items: lineItems,\n  shopify_customer_id: String(customer.id || ''),\n  customer_name: [customer.first_name, customer.last_name].filter(Boolean).join(' ').trim(),\n  customer_email: customer.email || order.email || '',\n  customer_phone: customer.phone || '',\n  customer_total_orders: Number(customer.orders_count || 0),\n  customer_total_spent: Number(customer.total_spent || 0),\n} }];"
+      }
+    },
+    {
+      "id": "7896de4c-8aa6-4afb-b922-d666479d37fb",
+      "name": "MASTER - Event Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        1520
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "renameOutput": true,
+              "outputKey": "ORDER",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event_type }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "ORDER"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "PRODUCT",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event_type }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "PRODUCT"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "CUSTOMER",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event_type }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "CUSTOMER"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "INVENTORY",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event_type }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "INVENTORY"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "FINANCIAL",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event_type }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "FINANCIAL"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "REPORT",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event_type }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "REPORT"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "UNROUTED"
+        }
+      }
+    },
+    {
+      "id": "b215db16-70bf-4fa2-ac60-052acda23111",
+      "name": "SHOPIFY - Product Created Webhook",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        672
+      ],
+      "parameters": {
+        "topic": "products/create"
+      },
+      "webhookId": "8c539f56-b07f-48a3-ab0a-75383ab0a8a7"
+    },
+    {
+      "id": "7a226c70-0ba5-4dbb-8560-c33dbe735ed1",
+      "name": "MASTER - Normalize Product",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        864
+      ],
+      "parameters": {
+        "jsCode": "const p = $json;\nconst v = (Array.isArray(p.variants) && p.variants[0]) || {};\nreturn [{ json: {\n  event_type: 'PRODUCT',\n  execution_id: $execution.id,\n  timestamp: new Date().toISOString(),\n  shopify_product_id: String(p.id || ''),\n  sku: v.sku || '',\n  product_name: p.title || '',\n  body_html: p.body_html || '',\n  category: p.product_type || '',\n  vendor: p.vendor || '',\n  tags: p.tags || '',\n  shopify_status: p.status || 'draft',\n  selling_price: Number(v.price || 0),\n  inventory: Number(v.inventory_quantity || 0),\n  created_at: p.created_at || '',\n  updated_at: p.updated_at || '',\n} }];"
+      }
+    },
+    {
+      "id": "878a205b-d617-4747-9d26-2bb48a86cc4d",
+      "name": "SHOPIFY - Product Updated Webhook",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        864
+      ],
+      "parameters": {
+        "topic": "products/update"
+      },
+      "webhookId": "debfc78e-502f-4e0a-9c14-06643a9d306e"
+    },
+    {
+      "id": "057ff75b-2990-426c-b4e2-fe63101832bc",
+      "name": "SHOPIFY - Customer Created Webhook",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1056
+      ],
+      "parameters": {
+        "topic": "customers/create"
+      },
+      "webhookId": "78d7d40d-79fa-441c-8a7c-1255e1d6e263"
+    },
+    {
+      "id": "750e95b3-80f1-4ee5-acaf-5f3fdf17a533",
+      "name": "MASTER - Normalize Customer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        1248
+      ],
+      "parameters": {
+        "jsCode": "const c = $json;\nconst orders = Number(c.orders_count || 0);\nconst spent = Number(c.total_spent || 0);\nlet segment = 'NEW';\nif (orders >= 1 && spent >= 500) segment = 'HIGH_VALUE';\nelse if (orders > 1) segment = 'RETURNING';\nreturn [{ json: {\n  event_type: 'CUSTOMER',\n  execution_id: $execution.id,\n  timestamp: new Date().toISOString(),\n  shopify_customer_id: String(c.id || ''),\n  customer_name: [c.first_name, c.last_name].filter(Boolean).join(' ').trim(),\n  customer_email: c.email || '',\n  customer_phone: c.phone || '',\n  total_orders: orders,\n  total_spent: spent,\n  avg_order_value: orders > 0 ? Number((spent / orders).toFixed(2)) : 0,\n  customer_segment: segment,\n  last_order: String(c.last_order_id || ''),\n  created_at: c.created_at || '',\n} }];"
+      }
+    },
+    {
+      "id": "3469d3a9-e16e-407f-9c7a-aa26a5ea382d",
+      "name": "SHOPIFY - Customer Updated Webhook",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1248
+      ],
+      "parameters": {
+        "topic": "customers/update"
+      },
+      "webhookId": "98bd23d4-467b-4b9e-a7f2-f00c4e9d548d"
+    },
+    {
+      "id": "0d1afc1d-1d55-44a0-9caa-3fc577b3ca8d",
+      "name": "SHOPIFY - Refund Webhook",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1440
+      ],
+      "parameters": {
+        "topic": "refunds/create"
+      },
+      "webhookId": "7de19101-bacc-437d-ae3e-cc561550ed2c"
+    },
+    {
+      "id": "ffe0b2b1-9b2f-4332-988e-651de48341d1",
+      "name": "MASTER - Normalize Refund",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        1440
+      ],
+      "parameters": {
+        "jsCode": "const r = $json;\nconst txns = Array.isArray(r.transactions) ? r.transactions : [];\nconst refundAmount = txns.reduce((s, t) => s + (Number(t.amount) || 0), 0);\nreturn [{ json: {\n  event_type: 'FINANCIAL',\n  execution_id: $execution.id,\n  timestamp: new Date().toISOString(),\n  refund_id: String(r.id || ''),\n  shopify_order_id: String(r.order_id || ''),\n  refund_amount: refundAmount,\n  created_at: r.created_at || '',\n} }];"
+      }
+    },
+    {
+      "id": "8c164343-1a61-424b-ba9f-e54f2fe0a954",
+      "name": "SCHEDULE - Inventory Sync (30m)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        1632
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "a6841917-c7f4-4a89-b941-72823ce3e4c9",
+      "name": "MASTER - Normalize Sync",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        1632
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: { event_type: 'INVENTORY', execution_id: $execution.id, timestamp: new Date().toISOString() } }];"
+      }
+    },
+    {
+      "id": "e21c520b-bd47-49c0-8874-136cd10da00d",
+      "name": "SCHEDULE - Daily AI Report",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        1824
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "840626d5-c220-4787-b67f-d905d3c0897d",
+      "name": "MASTER - Normalize Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        2016
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: { event_type: 'REPORT', execution_id: $execution.id, timestamp: new Date().toISOString(), report_date: new Date().toISOString().slice(0,10) } }];"
+      }
+    },
+    {
+      "id": "e26cd414-ce11-491b-88ae-6fca2b001ba2",
+      "name": "MANUAL - Admin Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        2016
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "c5373aa6-4f67-4d6c-9649-088766b7b828",
+      "name": "ORDER - Route Entry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        480
+      ],
+      "parameters": {
+        "jsCode": "return $input.all();"
+      }
+    },
+    {
+      "id": "072d1890-34f6-42e0-8704-64eae28a7400",
+      "name": "GSHEETS - Order Insert",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Orders"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Shopify Order ID"
+          ],
+          "value": {
+            "Order ID": "={{ $json.execution_id }}",
+            "Shopify Order ID": "={{ $json.shopify_order_id }}",
+            "Customer Name": "={{ $json.customer_name }}",
+            "Customer Email": "={{ $json.customer_email }}",
+            "Products": "={{ $json.products }}",
+            "Quantity": "={{ $json.quantity }}",
+            "Order Value": "={{ $json.order_value }}",
+            "Payment Status": "={{ $json.payment_status }}",
+            "Fulfillment Status": "={{ $json.fulfillment_status }}",
+            "Tracking Number": "={{ $json.tracking_number }}",
+            "Order Date": "={{ $json.order_created_at }}",
+            "Updated Date": "={{ $json.order_updated_at }}"
+          },
+          "schema": [
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify Order ID",
+              "displayName": "Shopify Order ID",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Customer Email",
+              "displayName": "Customer Email",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Products",
+              "displayName": "Products",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Order Value",
+              "displayName": "Order Value",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Payment Status",
+              "displayName": "Payment Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Fulfillment Status",
+              "displayName": "Fulfillment Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Tracking Number",
+              "displayName": "Tracking Number",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Order Date",
+              "displayName": "Order Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Updated Date",
+              "displayName": "Updated Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "baa527c9-81bd-4010-b791-9e96ca10c952",
+      "name": "GSHEETS - Order Customer Update",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        192
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Customers"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Shopify Customer ID"
+          ],
+          "value": {
+            "Customer ID": "={{ $json.shopify_customer_id }}",
+            "Shopify Customer ID": "={{ $json.shopify_customer_id }}",
+            "Name": "={{ $json.customer_name }}",
+            "Email": "={{ $json.customer_email }}",
+            "Phone": "={{ $json.customer_phone }}",
+            "Total Orders": "={{ $json.customer_total_orders }}",
+            "Total Spent": "={{ $json.customer_total_spent }}",
+            "Customer Segment": "={{ $json.customer_total_orders <= 1 ? \"NEW\" : ($json.customer_total_spent >= 500 ? \"HIGH_VALUE\" : \"RETURNING\") }}",
+            "Last Order": "={{ $json.order_created_at }}",
+            "Created Date": "={{ $json.timestamp }}"
+          },
+          "schema": [
+            {
+              "id": "Customer ID",
+              "displayName": "Customer ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify Customer ID",
+              "displayName": "Shopify Customer ID",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Total Orders",
+              "displayName": "Total Orders",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Total Spent",
+              "displayName": "Total Spent",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Customer Segment",
+              "displayName": "Customer Segment",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Last Order",
+              "displayName": "Last Order",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Created Date",
+              "displayName": "Created Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "acdd37b6-9c8b-4243-bccf-0bcc86993e12",
+      "name": "ORDER - Prepare Line Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        384
+      ],
+      "parameters": {
+        "jsCode": "const items = [];\nconst src = $json;\nconst lineItems = Array.isArray(src.line_items) ? src.line_items : [];\nfor (const li of lineItems) {\n  items.push({ json: {\n    sku: li.sku || '', shopify_product_id: String(li.product_id || ''),\n    product_name: li.title || '', sold_quantity: Number(li.quantity || 0),\n    last_checked: src.timestamp,\n  } });\n}\nreturn items;"
+      }
+    },
+    {
+      "id": "c8e3705a-b582-4da2-8e21-ed7d75e99450",
+      "name": "GSHEETS - Order Inventory Update",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1312,
+        384
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Inventory"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "SKU"
+          ],
+          "value": {
+            "SKU": "={{ $json.sku }}",
+            "Shopify Product ID": "={{ $json.shopify_product_id }}",
+            "Product Name": "={{ $json.product_name }}",
+            "Last Checked": "={{ $json.last_checked }}"
+          },
+          "schema": [
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify Product ID",
+              "displayName": "Shopify Product ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Reorder Level",
+              "displayName": "Reorder Level",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Stock Status",
+              "displayName": "Stock Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Supplier",
+              "displayName": "Supplier",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Last Checked",
+              "displayName": "Last Checked",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "9cc87a7b-5262-473b-97f1-9e7720e98932",
+      "name": "GSHEETS - Order Financial Insert",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        576
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Financials"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Date"
+          ],
+          "value": {
+            "Date": "={{ $json.order_created_at }}-{{ $json.shopify_order_id }}",
+            "Revenue": "={{ $json.order_value }}",
+            "Product Cost": "={{ 0 }}",
+            "Shipping Cost": "={{ $json.shipping_cost }}",
+            "Advertising Cost": "={{ 0 }}",
+            "Refunds": "={{ 0 }}",
+            "Other Expenses": "={{ 0 }}",
+            "Gross Profit": "={{ $json.subtotal }}",
+            "Net Profit": "={{ $json.order_value - $json.shipping_cost - $json.tax }}"
+          },
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Revenue",
+              "displayName": "Revenue",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Product Cost",
+              "displayName": "Product Cost",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shipping Cost",
+              "displayName": "Shipping Cost",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Advertising Cost",
+              "displayName": "Advertising Cost",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Refunds",
+              "displayName": "Refunds",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Other Expenses",
+              "displayName": "Other Expenses",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Gross Profit",
+              "displayName": "Gross Profit",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Net Profit",
+              "displayName": "Net Profit",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "381f87e4-0b8c-46d0-abdb-2cc6b77b8e1e",
+      "name": "NOTIFY - Admin New Order",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1024,
+        768
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.customer_email }}",
+        "subject": "=New Shopify order {{ $json.order_name }} — {{ $json.order_value }}",
+        "emailType": "text",
+        "message": "=New order received.\n\nOrder: {{ $json.order_name }}\nCustomer: {{ $json.customer_name }} ({{ $json.customer_email }})\nProducts: {{ $json.products }}\nQuantity: {{ $json.quantity }}\nOrder Value: {{ $json.order_value }}\nPayment: {{ $json.payment_status }}\nFulfillment: {{ $json.fulfillment_status }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IlG8uCvjv2r1mPTv",
+          "name": "Gmail account"
+        }
+      },
+      "executeOnce": true,
+      "webhookId": "40fa4898-8825-4634-923d-38e8b5f8e88e"
+    },
+    {
+      "id": "f8602ead-651a-434d-ae21-357ccad32ef6",
+      "name": "LOG - Order Success",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        960
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Automation Logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Execution ID": "={{ $json.execution_id }}",
+            "Event Type": "={{ $json.event_type }}",
+            "Workflow Section": "ORDERS",
+            "Status": "SUCCESS",
+            "Shopify ID": "={{ $json.shopify_order_id }}",
+            "Timestamp": "={{ $json.timestamp }}",
+            "Error": "",
+            "Retry Count": "={{ 0 }}",
+            "Details": "=Order {{ $json.order_name }} processed"
+          },
+          "schema": [
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Workflow Section",
+              "displayName": "Workflow Section",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify ID",
+              "displayName": "Shopify ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Retry Count",
+              "displayName": "Retry Count",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Details",
+              "displayName": "Details",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "fb4d150b-8ca0-4d13-bfea-45899fb5193b",
+      "name": "AI - Product Analyzer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        1056
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this Shopify product and return ONLY strict JSON.\n\nProduct name: {{ $json.product_name }}\nCategory: {{ $json.category }}\nVendor: {{ $json.vendor }}\nCurrent selling price: {{ $json.selling_price }}\nInventory: {{ $json.inventory }}\nExisting description: {{ $json.body_html }}\nTags: {{ $json.tags }}\n\nReturn JSON with keys: title, description, short_description, benefits (array), tags (array), category, seo_title, meta_description, keywords (array), recommended_price (number), ai_score (0-100 number), decision (\"APPROVE\"|\"REVIEW\"|\"REJECT\"), confidence (0-1 number), requires_human_approval (boolean), reason (string).",
+        "hasOutputParser": false,
+        "options": {
+          "systemMessage": "You are the central AI Decision Engine for a Shopify store. You enrich product data, generate SEO, and score products. You NEVER approve high-risk actions on your own. Always respond with a single valid JSON object and nothing else."
+        }
+      }
+    },
+    {
+      "id": "ea15bf8f-598f-4678-93ac-88fb4c361a17",
+      "name": "OpenAI Chat Model (Products)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        1280
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "67ce2omT71nU5R4R",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "id": "3eeeca4a-0c93-4c8e-b77b-b4b989eb1704",
+      "name": "PRODUCT - Parse AI + Business Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        1152
+      ],
+      "parameters": {
+        "jsCode": "const base = $('MASTER - Normalize Product').item.json;\nlet ai = {};\ntry {\n  const raw = $json.output || $json.text || '{}';\n  ai = typeof raw === 'string' ? JSON.parse(raw.replace(/^\\`\\`\\`json|\\`\\`\\`$/g, '').trim()) : raw;\n} catch (e) { ai = {}; }\n\nconst cost = 0; // supplier cost unknown from webhook; enriched later from Products sheet\nconst sellingPrice = Number(base.selling_price || 0);\nconst recommended = Number(ai.recommended_price || sellingPrice);\nconst profit = Number((sellingPrice - cost).toFixed(2));\nconst margin = sellingPrice > 0 ? Number(((profit / sellingPrice) * 100).toFixed(2)) : 0;\n\n// Business rules: never publish unless AI approves AND no human approval required.\nconst aiApproved = (ai.decision === 'APPROVE') && (ai.requires_human_approval === false);\nconst approvalStatus = aiApproved ? 'APPROVED' : 'PENDING';\n\nreturn [{ json: {\n  ...base,\n  ai_title: ai.title || base.product_name,\n  ai_description: ai.description || '',\n  short_description: ai.short_description || '',\n  benefits: Array.isArray(ai.benefits) ? ai.benefits.join('; ') : '',\n  ai_tags: Array.isArray(ai.tags) ? ai.tags.join(', ') : base.tags,\n  ai_category: ai.category || base.category,\n  seo_title: ai.seo_title || '',\n  meta_description: ai.meta_description || '',\n  keywords: Array.isArray(ai.keywords) ? ai.keywords.join(', ') : '',\n  recommended_price: recommended,\n  profit,\n  profit_margin: margin,\n  ai_score: Number(ai.ai_score || 0),\n  ai_confidence: Number(ai.confidence || 0),\n  ai_decision: ai.decision || 'REVIEW',\n  requires_human_approval: ai.requires_human_approval !== false,\n  ai_reason: ai.reason || '',\n  approval_status: approvalStatus,\n  seo_status: 'PENDING',\n} }];"
+      }
+    },
+    {
+      "id": "53836de2-338d-49f8-be5d-5cb1bab2e607",
+      "name": "GSHEETS - Product Update",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1312,
+        768
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Products"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Shopify Product ID"
+          ],
+          "value": {
+            "Product ID": "={{ $json.execution_id }}",
+            "Shopify Product ID": "={{ $json.shopify_product_id }}",
+            "SKU": "={{ $json.sku }}",
+            "Product Name": "={{ $json.ai_title }}",
+            "Selling Price": "={{ $json.selling_price }}",
+            "Profit": "={{ $json.profit }}",
+            "Profit Margin": "={{ $json.profit_margin }}",
+            "Inventory": "={{ $json.inventory }}",
+            "Category": "={{ $json.ai_category }}",
+            "AI Score": "={{ $json.ai_score }}",
+            "SEO Status": "={{ $json.seo_status }}",
+            "Approval Status": "={{ $json.approval_status }}",
+            "Shopify Status": "={{ $json.shopify_status }}",
+            "Created Date": "={{ $json.created_at }}",
+            "Updated Date": "={{ $json.updated_at }}",
+            "Notes": "={{ $json.ai_reason }}"
+          },
+          "schema": [
+            {
+              "id": "Product ID",
+              "displayName": "Product ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify Product ID",
+              "displayName": "Shopify Product ID",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Selling Price",
+              "displayName": "Selling Price",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Profit",
+              "displayName": "Profit",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Profit Margin",
+              "displayName": "Profit Margin",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Inventory",
+              "displayName": "Inventory",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "AI Score",
+              "displayName": "AI Score",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "SEO Status",
+              "displayName": "SEO Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Approval Status",
+              "displayName": "Approval Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify Status",
+              "displayName": "Shopify Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Created Date",
+              "displayName": "Created Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Updated Date",
+              "displayName": "Updated Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "eb3383a0-f09f-4095-97a7-794cdd910f43",
+      "name": "GSHEETS - SEO Update",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1312,
+        960
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "SEO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Product ID"
+          ],
+          "value": {
+            "Product ID": "={{ $json.shopify_product_id }}",
+            "Product Name": "={{ $json.ai_title }}",
+            "SEO Title": "={{ $json.seo_title }}",
+            "Meta Description": "={{ $json.meta_description }}",
+            "Keywords": "={{ $json.keywords }}",
+            "Tags": "={{ $json.ai_tags }}",
+            "SEO Score": "={{ $json.ai_score }}",
+            "Status": "={{ $json.seo_status }}",
+            "Updated Date": "={{ $json.updated_at }}"
+          },
+          "schema": [
+            {
+              "id": "Product ID",
+              "displayName": "Product ID",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "SEO Title",
+              "displayName": "SEO Title",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Meta Description",
+              "displayName": "Meta Description",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Tags",
+              "displayName": "Tags",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "SEO Score",
+              "displayName": "SEO Score",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Updated Date",
+              "displayName": "Updated Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "51e95059-0138-4ecb-b83b-275158e09ad9",
+      "name": "LOG - Product",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1312,
+        1248
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Automation Logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Execution ID": "={{ $json.execution_id }}",
+            "Event Type": "PRODUCT",
+            "Workflow Section": "PRODUCTS",
+            "Status": "={{ $json.approval_status }}",
+            "Shopify ID": "={{ $json.shopify_product_id }}",
+            "Timestamp": "={{ $json.timestamp }}",
+            "Error": "",
+            "Retry Count": "={{ 0 }}",
+            "Details": "=AI score {{ $json.ai_score }} — {{ $json.ai_reason }}"
+          },
+          "schema": [
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Workflow Section",
+              "displayName": "Workflow Section",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify ID",
+              "displayName": "Shopify ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Retry Count",
+              "displayName": "Retry Count",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Details",
+              "displayName": "Details",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "bbc7c0b8-e22e-4413-85af-f8b716662669",
+      "name": "APPROVAL - Product Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1312,
+        1440
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.approval_status }}",
+              "rightValue": "APPROVED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "3bcaef3d-19d0-4af7-98d8-22ebef68bec0",
+      "name": "SHOPIFY - Publish Product",
+      "type": "n8n-nodes-base.shopify",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        1440
+      ],
+      "parameters": {
+        "resource": "product",
+        "operation": "update",
+        "productId": "={{ $json.shopify_product_id }}",
+        "updateFields": {
+          "title": "={{ $json.ai_title }}",
+          "body_html": "={{ $json.ai_description }}",
+          "tags": "={{ $json.ai_tags }}",
+          "product_type": "={{ $json.ai_category }}"
+        }
+      }
+    },
+    {
+      "id": "cb021d84-5d05-4829-9c79-44b86efc81b5",
+      "name": "GSHEETS - Customer Upsert",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        1456
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Customers"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Shopify Customer ID"
+          ],
+          "value": {
+            "Customer ID": "={{ $json.shopify_customer_id }}",
+            "Shopify Customer ID": "={{ $json.shopify_customer_id }}",
+            "Name": "={{ $json.customer_name }}",
+            "Email": "={{ $json.customer_email }}",
+            "Phone": "={{ $json.customer_phone }}",
+            "Total Orders": "={{ $json.total_orders }}",
+            "Total Spent": "={{ $json.total_spent }}",
+            "Customer Segment": "={{ $json.customer_segment }}",
+            "Last Order": "={{ $json.last_order }}",
+            "Created Date": "={{ $json.created_at }}"
+          },
+          "schema": [
+            {
+              "id": "Customer ID",
+              "displayName": "Customer ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify Customer ID",
+              "displayName": "Shopify Customer ID",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Total Orders",
+              "displayName": "Total Orders",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Total Spent",
+              "displayName": "Total Spent",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Customer Segment",
+              "displayName": "Customer Segment",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Last Order",
+              "displayName": "Last Order",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Created Date",
+              "displayName": "Created Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "4e25c090-ed38-4e2d-9bd0-d6699a7c20f9",
+      "name": "SHOPIFY - Get All Products",
+      "type": "n8n-nodes-base.shopify",
+      "typeVersion": 1,
+      "position": [
+        736,
+        1728
+      ],
+      "parameters": {
+        "resource": "product",
+        "operation": "getAll",
+        "returnAll": true,
+        "additionalFields": {}
+      }
+    },
+    {
+      "id": "422d1d09-12d2-42de-b1fd-8f8c4165d1f7",
+      "name": "INVENTORY - Compute Stock Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        1728
+      ],
+      "parameters": {
+        "jsCode": "const REORDER = 5;\nconst out = [];\nfor (const item of $input.all()) {\n  const p = item.json;\n  const variants = Array.isArray(p.variants) ? p.variants : [];\n  for (const v of variants) {\n    const stock = Number(v.inventory_quantity || 0);\n    let status = 'IN STOCK';\n    if (stock === 0) status = 'OUT OF STOCK';\n    else if (stock <= REORDER) status = 'LOW STOCK';\n    out.push({ json: {\n      sku: v.sku || '',\n      shopify_product_id: String(p.id || ''),\n      product_name: p.title || '',\n      current_stock: stock,\n      reorder_level: REORDER,\n      stock_status: status,\n      needs_attention: status !== 'IN STOCK',\n      last_checked: new Date().toISOString(),\n    } });\n  }\n}\nreturn out;"
+      }
+    },
+    {
+      "id": "d0a24ec6-fd6e-47c9-af9a-b70454544406",
+      "name": "GSHEETS - Inventory Sync Update",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1312,
+        1632
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Inventory"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "SKU"
+          ],
+          "value": {
+            "SKU": "={{ $json.sku }}",
+            "Shopify Product ID": "={{ $json.shopify_product_id }}",
+            "Product Name": "={{ $json.product_name }}",
+            "Current Stock": "={{ $json.current_stock }}",
+            "Reorder Level": "={{ $json.reorder_level }}",
+            "Stock Status": "={{ $json.stock_status }}",
+            "Last Checked": "={{ $json.last_checked }}"
+          },
+          "schema": [
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify Product ID",
+              "displayName": "Shopify Product ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Reorder Level",
+              "displayName": "Reorder Level",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Stock Status",
+              "displayName": "Stock Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Supplier",
+              "displayName": "Supplier",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Last Checked",
+              "displayName": "Last Checked",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "4b392f9b-5b54-42c0-8d0a-018db14486fd",
+      "name": "INVENTORY - Needs Reorder?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1312,
+        1872
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.needs_attention }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "29ae0220-efdc-4c2e-a693-7af6d6f643c4",
+      "name": "NOTIFY - Low Stock",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        1872
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "<__PLACEHOLDER_VALUE__Admin email for low-stock alerts__>",
+        "subject": "=Low/Out of stock: {{ $json.product_name }} ({{ $json.sku }})",
+        "emailType": "text",
+        "message": "=Inventory alert.\n\nProduct: {{ $json.product_name }}\nSKU: {{ $json.sku }}\nCurrent stock: {{ $json.current_stock }}\nStatus: {{ $json.stock_status }}\n\nNo automatic purchasing is performed — please review and reorder manually.",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IlG8uCvjv2r1mPTv",
+          "name": "Gmail account"
+        }
+      },
+      "webhookId": "e133de8d-6d48-4f0b-949e-85a789d99b09"
+    },
+    {
+      "id": "f10e1baa-c055-4bfb-a6d7-1ca51dd052ec",
+      "name": "FINANCIAL - Route Entry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        2016
+      ],
+      "parameters": {
+        "jsCode": "return $input.all();"
+      }
+    },
+    {
+      "id": "b17311b1-6c68-40a7-a5a7-ddd2b274227c",
+      "name": "GSHEETS - Refund Financial Insert",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        1920
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Financials"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Date"
+          ],
+          "value": {
+            "Date": "={{ $json.created_at }}-refund-{{ $json.refund_id }}",
+            "Revenue": "={{ 0 }}",
+            "Product Cost": "={{ 0 }}",
+            "Shipping Cost": "={{ 0 }}",
+            "Advertising Cost": "={{ 0 }}",
+            "Refunds": "={{ $json.refund_amount }}",
+            "Other Expenses": "={{ 0 }}",
+            "Gross Profit": "={{ 0 - $json.refund_amount }}",
+            "Net Profit": "={{ 0 - $json.refund_amount }}"
+          },
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Revenue",
+              "displayName": "Revenue",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Product Cost",
+              "displayName": "Product Cost",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shipping Cost",
+              "displayName": "Shipping Cost",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Advertising Cost",
+              "displayName": "Advertising Cost",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Refunds",
+              "displayName": "Refunds",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Other Expenses",
+              "displayName": "Other Expenses",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Gross Profit",
+              "displayName": "Gross Profit",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Net Profit",
+              "displayName": "Net Profit",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "4390394e-11b6-40c1-b0d7-8855af5876b4",
+      "name": "LOG - Refund",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        2112
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Automation Logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Execution ID": "={{ $json.execution_id }}",
+            "Event Type": "FINANCIAL",
+            "Workflow Section": "FINANCIALS",
+            "Status": "REFUND_RECORDED",
+            "Shopify ID": "={{ $json.shopify_order_id }}",
+            "Timestamp": "={{ $json.timestamp }}",
+            "Error": "",
+            "Retry Count": "={{ 0 }}",
+            "Details": "=Refund {{ $json.refund_id }} amount {{ $json.refund_amount }}"
+          },
+          "schema": [
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Workflow Section",
+              "displayName": "Workflow Section",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify ID",
+              "displayName": "Shopify ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Retry Count",
+              "displayName": "Retry Count",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Details",
+              "displayName": "Details",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "b17cca40-31dd-4d36-a2df-9fa79ea846d4",
+      "name": "GSHEETS - Read Orders",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        2304
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Orders"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "b207007e-9818-4b08-b875-92e91b588a31",
+      "name": "REPORT - Aggregate Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        2304
+      ],
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => Object.keys(r).length > 0);\nlet revenue = 0;\nconst productCount = {};\nfor (const r of rows) {\n  revenue += Number(r['Order Value'] || 0);\n  const prods = String(r['Products'] || '').split(',').map(s => s.trim()).filter(Boolean);\n  for (const p of prods) productCount[p] = (productCount[p] || 0) + 1;\n}\nconst orders = rows.length;\nconst aov = orders > 0 ? Number((revenue / orders).toFixed(2)) : 0;\nconst ranked = Object.keys(productCount).map(k => ({ name: k, count: productCount[k] })).sort((a,b) => b.count - a.count);\nconst best = ranked.slice(0, 5).map(x => x.name + ' (' + x.count + ')').join(', ');\nconst worst = ranked.slice(-3).map(x => x.name + ' (' + x.count + ')').join(', ');\nreturn [{ json: {\n  report_date: new Date().toISOString().slice(0,10),\n  total_orders: orders,\n  total_revenue: Number(revenue.toFixed(2)),\n  avg_order_value: aov,\n  best_sellers: best || 'none',\n  worst_performers: worst || 'none',\n} }];"
+      }
+    },
+    {
+      "id": "34ce35a1-7460-4ae8-b877-87ad98d0aede",
+      "name": "AI - Daily Store Analyst",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1248,
+        2304
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Produce a DAILY STORE ANALYSIS for {{ $json.report_date }}.\n\nMetrics:\nTotal orders: {{ $json.total_orders }}\nTotal revenue: {{ $json.total_revenue }}\nAverage order value: {{ $json.avg_order_value }}\nBest sellers: {{ $json.best_sellers }}\nWorst performers: {{ $json.worst_performers }}\n\nWrite clear sections: 1. Sales Performance 2. Profitability 3. Product Performance 4. Inventory Problems 5. Customer Problems 6. Marketing Opportunities 7. Store Risks 8. Recommended Actions.",
+        "hasOutputParser": false,
+        "options": {
+          "systemMessage": "You are a senior e-commerce business analyst. Be concise, data-driven and actionable."
+        }
+      }
+    },
+    {
+      "id": "720de54c-e6a5-4bd3-b9e8-a014029a59b0",
+      "name": "OpenAI Chat Model (Report)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1328,
+        2528
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "67ce2omT71nU5R4R",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "id": "a8bf4f31-67b0-4dac-8728-25efc6ffece3",
+      "name": "GSHEETS - Save Daily Report",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1600,
+        2112
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Automation Logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Execution ID": "={{ $execution.id }}",
+            "Event Type": "REPORT",
+            "Workflow Section": "REPORTING",
+            "Status": "REPORT_GENERATED",
+            "Shopify ID": "",
+            "Timestamp": "={{ $now.toISO() }}",
+            "Error": "",
+            "Retry Count": "={{ 0 }}",
+            "Details": "={{ $json.output }}"
+          },
+          "schema": [
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Workflow Section",
+              "displayName": "Workflow Section",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify ID",
+              "displayName": "Shopify ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Retry Count",
+              "displayName": "Retry Count",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Details",
+              "displayName": "Details",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "f92c8d88-a3e7-43d4-b5f2-0bbf97b0da77",
+      "name": "NOTIFY - Daily Report Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        2400
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "<__PLACEHOLDER_VALUE__Admin email for daily report__>",
+        "subject": "=Daily Store Analysis — {{ $now.toFormat(\"yyyy-LL-dd\") }}",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IlG8uCvjv2r1mPTv",
+          "name": "Gmail account"
+        }
+      },
+      "executeOnce": true,
+      "webhookId": "3f3ea97e-46bf-4cf1-bb23-fe5a6a6c4f63"
+    },
+    {
+      "id": "a67f1263-f5c5-4679-beae-12854129061c",
+      "name": "SUPPORT - Ticket Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        2736
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "shopify-support",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "webhookId": "5e12b3f7-5c96-4151-88e4-0ac910d62949"
+    },
+    {
+      "id": "e06d9ff9-2f0f-46ca-ba6a-395fcffcee21",
+      "name": "AI - Support Classifier",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        2640
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Classify this customer support message and draft a reply. Return ONLY strict JSON.\n\nCustomer: {{ $json.body.customer }}\nEmail: {{ $json.body.email }}\nQuestion: {{ $json.body.question }}\n\nReturn JSON with keys: category (one of PRODUCT, SHIPPING, ORDER_STATUS, PAYMENT, RETURN, REFUND, COMPLAINT, OTHER), priority (LOW|MEDIUM|HIGH), response (string draft reply), requires_human_approval (boolean - true for REFUND, COMPLAINT, PAYMENT disputes, legal issues), confidence (0-1).",
+        "hasOutputParser": false,
+        "options": {
+          "systemMessage": "You are a Shopify customer-support triage agent. Sensitive categories (refund, complaint, payment dispute, legal) MUST set requires_human_approval=true. Respond with a single valid JSON object only."
+        }
+      }
+    },
+    {
+      "id": "304b4f25-29ad-4154-a8f9-2d17c4c312a5",
+      "name": "OpenAI Chat Model (Support)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        2864
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "67ce2omT71nU5R4R",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "id": "ce8a056a-4b3b-41e5-a244-6bec825164ba",
+      "name": "SUPPORT - Parse + Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        2736
+      ],
+      "parameters": {
+        "jsCode": "const src = $('SUPPORT - Ticket Webhook').item.json.body || {};\nlet ai = {};\ntry { const raw = $json.output || '{}'; ai = typeof raw === 'string' ? JSON.parse(raw.replace(/^\\`\\`\\`json|\\`\\`\\`$/g,'').trim()) : raw; } catch (e) { ai = {}; }\nconst sensitive = ['REFUND','COMPLAINT','PAYMENT'];\nconst category = ai.category || 'OTHER';\nconst requiresHuman = ai.requires_human_approval === true || sensitive.indexOf(category) !== -1;\nreturn [{ json: {\n  execution_id: $execution.id,\n  timestamp: new Date().toISOString(),\n  ticket_id: src.ticket_id || ('TCK-' + $execution.id),\n  customer: src.customer || '',\n  email: src.email || '',\n  question: src.question || '',\n  category,\n  priority: ai.priority || 'MEDIUM',\n  ai_response: ai.response || '',\n  requires_human_approval: requiresHuman,\n  approval_status: requiresHuman ? 'PENDING' : 'AUTO_APPROVED',\n  confidence: Number(ai.confidence || 0),\n} }];"
+      }
+    },
+    {
+      "id": "13877a46-af71-42df-8852-8b67ceef4e5b",
+      "name": "GSHEETS - Support Insert",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        2640
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Customer Support"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Ticket ID"
+          ],
+          "value": {
+            "Ticket ID": "={{ $json.ticket_id }}",
+            "Customer": "={{ $json.customer }}",
+            "Email": "={{ $json.email }}",
+            "Question": "={{ $json.question }}",
+            "Category": "={{ $json.category }}",
+            "Priority": "={{ $json.priority }}",
+            "AI Response": "={{ $json.ai_response }}",
+            "Approval Status": "={{ $json.approval_status }}",
+            "Response Status": "={{ $json.requires_human_approval ? \"AWAITING_APPROVAL\" : \"SENT\" }}",
+            "Date": "={{ $json.timestamp }}"
+          },
+          "schema": [
+            {
+              "id": "Ticket ID",
+              "displayName": "Ticket ID",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Customer",
+              "displayName": "Customer",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Question",
+              "displayName": "Question",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "AI Response",
+              "displayName": "AI Response",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Approval Status",
+              "displayName": "Approval Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Response Status",
+              "displayName": "Response Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "685efb8e-a63f-4af2-80cf-f8f35102f051",
+      "name": "SUPPORT - Auto Reply?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        800,
+        2832
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.requires_human_approval }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "94bac69d-ccce-493f-b2da-33506fe40e54",
+      "name": "SUPPORT - Send Auto Reply",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1024,
+        2832
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "=Re: your question [{{ $json.ticket_id }}]",
+        "emailType": "text",
+        "message": "={{ $json.ai_response }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IlG8uCvjv2r1mPTv",
+          "name": "Gmail account"
+        }
+      },
+      "webhookId": "78ec59e6-4df9-49e9-ba4e-6843724f099e"
+    },
+    {
+      "id": "cc15c193-1314-4776-bfdb-e9ed057ee049",
+      "name": "RESEARCH - New Row Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        3168
+      ],
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "Product Research"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "credentials": {}
+    },
+    {
+      "id": "23f6442c-5267-4803-bfe8-0b51754f0652",
+      "name": "AI - Research Analyzer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        3168
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this product idea for a dropshipping/e-commerce store. Return ONLY strict JSON.\n\nProduct: {{ $json[\"Product Name\"] }}\nSupplier: {{ $json.Supplier }}\nCost: {{ $json.Cost }}\nEstimated selling price: {{ $json[\"Estimated Selling Price\"] }}\n\nReturn JSON with keys: competition_score (0-100), demand_score (0-100), trend_score (0-100), saturation_score (0-100), risk_score (0-100), ai_score (0-100 overall), estimated_profit (number), recommendation (one of \"HIGH POTENTIAL\",\"TEST\",\"LOW POTENTIAL\",\"REJECT\"), reason (string).",
+        "hasOutputParser": false,
+        "options": {
+          "systemMessage": "You are a product research analyst. Never recommend purchasing inventory; only score and recommend. Respond with a single valid JSON object only."
+        }
+      }
+    },
+    {
+      "id": "4ff7345e-2684-4946-987b-b822a6acc618",
+      "name": "OpenAI Chat Model (Research)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        3392
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "67ce2omT71nU5R4R",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "id": "c9de9d84-5735-41b7-898d-323e41bee137",
+      "name": "RESEARCH - Parse",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        3168
+      ],
+      "parameters": {
+        "jsCode": "const src = $('RESEARCH - New Row Trigger').item.json;\nlet ai = {};\ntry { const raw = $json.output || '{}'; ai = typeof raw === 'string' ? JSON.parse(raw.replace(/^\\`\\`\\`json|\\`\\`\\`$/g,'').trim()) : raw; } catch (e) { ai = {}; }\nreturn [{ json: {\n  execution_id: $execution.id,\n  timestamp: new Date().toISOString(),\n  research_id: src['Research ID'] || ('R-' + $execution.id),\n  product_name: src['Product Name'] || '',\n  supplier: src.Supplier || '',\n  supplier_url: src['Supplier URL'] || '',\n  cost: Number(src.Cost || 0),\n  estimated_selling_price: Number(src['Estimated Selling Price'] || 0),\n  estimated_profit: Number(ai.estimated_profit || 0),\n  competition_score: Number(ai.competition_score || 0),\n  demand_score: Number(ai.demand_score || 0),\n  trend_score: Number(ai.trend_score || 0),\n  saturation_score: Number(ai.saturation_score || 0),\n  risk_score: Number(ai.risk_score || 0),\n  ai_score: Number(ai.ai_score || 0),\n  recommendation: ai.recommendation || 'TEST',\n  reason: ai.reason || '',\n} }];"
+      }
+    },
+    {
+      "id": "a6386f5e-1ce0-4cba-98e2-14680ffc9f80",
+      "name": "GSHEETS - Research Update",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        3168
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Product Research"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Research ID"
+          ],
+          "value": {
+            "Research ID": "={{ $json.research_id }}",
+            "Product Name": "={{ $json.product_name }}",
+            "Supplier": "={{ $json.supplier }}",
+            "Supplier URL": "={{ $json.supplier_url }}",
+            "Cost": "={{ $json.cost }}",
+            "Estimated Selling Price": "={{ $json.estimated_selling_price }}",
+            "Estimated Profit": "={{ $json.estimated_profit }}",
+            "Competition Score": "={{ $json.competition_score }}",
+            "Demand Score": "={{ $json.demand_score }}",
+            "Trend Score": "={{ $json.trend_score }}",
+            "Saturation Score": "={{ $json.saturation_score }}",
+            "Risk Score": "={{ $json.risk_score }}",
+            "AI Score": "={{ $json.ai_score }}",
+            "Recommendation": "={{ $json.recommendation }}",
+            "Approval Status": "PENDING",
+            "Research Date": "={{ $json.timestamp }}"
+          },
+          "schema": [
+            {
+              "id": "Research ID",
+              "displayName": "Research ID",
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Supplier",
+              "displayName": "Supplier",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Supplier URL",
+              "displayName": "Supplier URL",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Cost",
+              "displayName": "Cost",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Estimated Selling Price",
+              "displayName": "Estimated Selling Price",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Estimated Profit",
+              "displayName": "Estimated Profit",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Competition Score",
+              "displayName": "Competition Score",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Demand Score",
+              "displayName": "Demand Score",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Trend Score",
+              "displayName": "Trend Score",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Saturation Score",
+              "displayName": "Saturation Score",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Risk Score",
+              "displayName": "Risk Score",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "AI Score",
+              "displayName": "AI Score",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Recommendation",
+              "displayName": "Recommendation",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Approval Status",
+              "displayName": "Approval Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Research Date",
+              "displayName": "Research Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "c96077d4-25f2-45e5-adfb-55d4e3b43a44",
+      "name": "SCHEDULE - Price Check (6h)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        3600
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "e43d0723-af9d-4e6f-bfc9-e0e1d8d3805a",
+      "name": "GSHEETS - Read Products (Price)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        3600
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Products"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "bbedb898-9391-4432-88b6-1722e896e59f",
+      "name": "PRICE - Calculate Recommendation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        3600
+      ],
+      "parameters": {
+        "jsCode": "const MIN_PROFIT_MARGIN = 0.30; // 30%\nconst MAX_PRICE_CHANGE = 0.15;   // 15%\nconst SHIPPING = 3.00;\nconst out = [];\nfor (const item of $input.all()) {\n  const r = item.json;\n  if (!r || Object.keys(r).length === 0) continue;\n  const cost = Number(r['Cost Price'] || 0);\n  const current = Number(r['Selling Price'] || 0);\n  if (current <= 0) continue;\n  // Recommended = (cost + shipping) / (1 - margin)\n  const recommended = Number(((cost + SHIPPING) / (1 - MIN_PROFIT_MARGIN)).toFixed(2));\n  const changePct = current > 0 ? Math.abs(recommended - current) / current : 1;\n  const smallChange = changePct <= MAX_PRICE_CHANGE;\n  out.push({ json: {\n    execution_id: $execution.id,\n    timestamp: new Date().toISOString(),\n    shopify_product_id: String(r['Shopify Product ID'] || ''),\n    product_name: r['Product Name'] || '',\n    cost, current_price: current,\n    recommended_price: recommended,\n    change_pct: Number((changePct * 100).toFixed(2)),\n    within_threshold: smallChange,\n    approval_status: smallChange ? 'AUTO_APPROVED' : 'PENDING',\n  } });\n}\nreturn out;"
+      }
+    },
+    {
+      "id": "ac6df6fe-7dbe-4d36-8908-018154f29651",
+      "name": "GSHEETS - Price Log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        3504
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Automation Logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Execution ID": "={{ $json.execution_id }}",
+            "Event Type": "PRICE",
+            "Workflow Section": "PRICING",
+            "Status": "={{ $json.approval_status }}",
+            "Shopify ID": "={{ $json.shopify_product_id }}",
+            "Timestamp": "={{ $json.timestamp }}",
+            "Error": "",
+            "Retry Count": "={{ 0 }}",
+            "Details": "={{ $json.product_name }}: {{ $json.current_price }} -> {{ $json.recommended_price }} ({{ $json.change_pct }}%)"
+          },
+          "schema": [
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Workflow Section",
+              "displayName": "Workflow Section",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify ID",
+              "displayName": "Shopify ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Retry Count",
+              "displayName": "Retry Count",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Details",
+              "displayName": "Details",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "5addb760-e90a-4813-973b-9a67c4ebe7c3",
+      "name": "PRICE - Auto Apply?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        3696
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.within_threshold }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "0c6b75da-0775-452d-9ae4-f19465bbfee2",
+      "name": "SHOPIFY - Update Price",
+      "type": "n8n-nodes-base.shopify",
+      "typeVersion": 1,
+      "position": [
+        896,
+        3696
+      ],
+      "parameters": {
+        "resource": "product",
+        "operation": "update",
+        "productId": "={{ $json.shopify_product_id }}",
+        "updateFields": {}
+      }
+    },
+    {
+      "id": "212a14c2-3add-45e1-ba79-c9e7527b2a3c",
+      "name": "MARKETING - Approved Product Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        4016
+      ],
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "Products"
+        },
+        "event": "anyUpdate",
+        "options": {
+          "columnsToWatch": [
+            "Approval Status"
+          ]
+        }
+      },
+      "credentials": {}
+    },
+    {
+      "id": "fe31d7c3-effb-42ae-b406-5d8965f07c40",
+      "name": "MARKETING - Only Approved",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        4016
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json[\"Approval Status\"] }}",
+              "rightValue": "APPROVED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "16fc7156-7c62-4318-a6d3-a439fac7783e",
+      "name": "AI - Marketing Generator",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        4016
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate marketing content for this approved product. Return ONLY strict JSON.\n\nProduct: {{ $json[\"Product Name\"] }}\nCategory: {{ $json.Category }}\n\nReturn JSON with keys: facebook (string), instagram_caption (string), ad_copy (string), promo_copy (string), cta (string), video_script (string).",
+        "hasOutputParser": false,
+        "options": {
+          "systemMessage": "You are an e-commerce marketing copywriter. Respond with a single valid JSON object only."
+        }
+      }
+    },
+    {
+      "id": "e683a832-e04e-4c99-abc2-6bd77eba5ccc",
+      "name": "OpenAI Chat Model (Marketing)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        4240
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "67ce2omT71nU5R4R",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "id": "8b4df3de-b3b3-4f02-8395-84f31cfdfefc",
+      "name": "GSHEETS - Marketing Insert",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        4016
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Marketing"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Product ID": "={{ $(\"MARKETING - Approved Product Trigger\").item.json[\"Shopify Product ID\"] }}",
+            "Product Name": "={{ $(\"MARKETING - Approved Product Trigger\").item.json[\"Product Name\"] }}",
+            "Platform": "Facebook/Instagram",
+            "Content Type": "AI Generated Bundle",
+            "Generated Content": "={{ $json.output }}",
+            "Approval Status": "PENDING",
+            "Published Status": "NOT_PUBLISHED",
+            "Date": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "Product ID",
+              "displayName": "Product ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Content Type",
+              "displayName": "Content Type",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Generated Content",
+              "displayName": "Generated Content",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Approval Status",
+              "displayName": "Approval Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Published Status",
+              "displayName": "Published Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "8be552cd-195e-4d15-ab75-36c1a3ca0875",
+      "name": "ERROR - Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        4448
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "b1927abd-f82e-4b3f-97c0-05dbabdba203",
+      "name": "LOG - Error",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        4352
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "SHOPIFY AI CONTROL CENTER"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Automation Logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Execution ID": "={{ $json.execution.id }}",
+            "Event Type": "ERROR",
+            "Workflow Section": "={{ $json.execution.lastNodeExecuted }}",
+            "Status": "ERROR",
+            "Shopify ID": "",
+            "Timestamp": "={{ $now.toISO() }}",
+            "Error": "={{ $json.execution.error.message }}",
+            "Retry Count": "={{ 0 }}",
+            "Details": "=Workflow {{ $json.workflow.name }} failed at {{ $json.execution.lastNodeExecuted }}"
+          },
+          "schema": [
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Workflow Section",
+              "displayName": "Workflow Section",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Shopify ID",
+              "displayName": "Shopify ID",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Retry Count",
+              "displayName": "Retry Count",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            },
+            {
+              "id": "Details",
+              "displayName": "Details",
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "display": true,
+              "required": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gw1UIq29w1Jhk8fM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "b4db5be5-f622-4708-95b6-14f094d3a934",
+      "name": "NOTIFY - Admin Error",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        4544
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "<__PLACEHOLDER_VALUE__Admin email for error alerts__>",
+        "subject": "=[ERROR] {{ $json.workflow.name }} failed",
+        "emailType": "text",
+        "message": "=Workflow: {{ $json.workflow.name }}\nFailed node: {{ $json.execution.lastNodeExecuted }}\nError: {{ $json.execution.error.message }}\nExecution: {{ $json.execution.id }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IlG8uCvjv2r1mPTv",
+          "name": "Gmail account"
+        }
+      },
+      "executeOnce": true,
+      "webhookId": "44f89305-de94-4723-9ff5-7f8023a6ce65"
+    }
+  ],
+  "connections": {
+    "SHOPIFY - Order Webhook": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MASTER - Normalize Order": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Event Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MASTER - Event Switch": {
+      "main": [
+        [
+          {
+            "node": "ORDER - Route Entry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI - Product Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GSHEETS - Customer Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SHOPIFY - Get All Products",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FINANCIAL - Route Entry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GSHEETS - Read Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SHOPIFY - Product Created Webhook": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MASTER - Normalize Product": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Event Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SHOPIFY - Product Updated Webhook": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SHOPIFY - Customer Created Webhook": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MASTER - Normalize Customer": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Event Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SHOPIFY - Customer Updated Webhook": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SHOPIFY - Refund Webhook": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Refund",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MASTER - Normalize Refund": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Event Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SCHEDULE - Inventory Sync (30m)": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MASTER - Normalize Sync": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Event Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SCHEDULE - Daily AI Report": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MASTER - Normalize Report": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Event Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MANUAL - Admin Start": {
+      "main": [
+        [
+          {
+            "node": "MASTER - Normalize Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ORDER - Route Entry": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Order Insert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GSHEETS - Order Customer Update",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ORDER - Prepare Line Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GSHEETS - Order Financial Insert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "NOTIFY - Admin New Order",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "LOG - Order Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ORDER - Prepare Line Items": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Order Inventory Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Product Analyzer": {
+      "main": [
+        [
+          {
+            "node": "PRODUCT - Parse AI + Business Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model (Products)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI - Product Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PRODUCT - Parse AI + Business Rules": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Product Update",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GSHEETS - SEO Update",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "LOG - Product",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "APPROVAL - Product Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "APPROVAL - Product Approved?": {
+      "main": [
+        [
+          {
+            "node": "SHOPIFY - Publish Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SHOPIFY - Get All Products": {
+      "main": [
+        [
+          {
+            "node": "INVENTORY - Compute Stock Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INVENTORY - Compute Stock Status": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Inventory Sync Update",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "INVENTORY - Needs Reorder?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INVENTORY - Needs Reorder?": {
+      "main": [
+        [
+          {
+            "node": "NOTIFY - Low Stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FINANCIAL - Route Entry": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Refund Financial Insert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "LOG - Refund",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GSHEETS - Read Orders": {
+      "main": [
+        [
+          {
+            "node": "REPORT - Aggregate Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "REPORT - Aggregate Metrics": {
+      "main": [
+        [
+          {
+            "node": "AI - Daily Store Analyst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Daily Store Analyst": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Save Daily Report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "NOTIFY - Daily Report Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model (Report)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI - Daily Store Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPPORT - Ticket Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI - Support Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Support Classifier": {
+      "main": [
+        [
+          {
+            "node": "SUPPORT - Parse + Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model (Support)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI - Support Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPPORT - Parse + Rules": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Support Insert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SUPPORT - Auto Reply?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPPORT - Auto Reply?": {
+      "main": [
+        [
+          {
+            "node": "SUPPORT - Send Auto Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RESEARCH - New Row Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI - Research Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Research Analyzer": {
+      "main": [
+        [
+          {
+            "node": "RESEARCH - Parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model (Research)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI - Research Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RESEARCH - Parse": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Research Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SCHEDULE - Price Check (6h)": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Read Products (Price)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GSHEETS - Read Products (Price)": {
+      "main": [
+        [
+          {
+            "node": "PRICE - Calculate Recommendation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PRICE - Calculate Recommendation": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Price Log",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PRICE - Auto Apply?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PRICE - Auto Apply?": {
+      "main": [
+        [
+          {
+            "node": "SHOPIFY - Update Price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MARKETING - Approved Product Trigger": {
+      "main": [
+        [
+          {
+            "node": "MARKETING - Only Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MARKETING - Only Approved": {
+      "main": [
+        [
+          {
+            "node": "AI - Marketing Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Marketing Generator": {
+      "main": [
+        [
+          {
+            "node": "GSHEETS - Marketing Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model (Marketing)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI - Marketing Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ERROR - Trigger": {
+      "main": [
+        [
+          {
+            "node": "LOG - Error",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "NOTIFY - Admin Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

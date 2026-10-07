@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shahi Tikka — Lahore's Finest BBQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  :root {
+    --gold: #C8922A;
+    --gold-light: #E8B84B;
+    --gold-pale: #FDF6E8;
+    --crimson: #8B1A1A;
+    --crimson-deep: #5C0F0F;
+    --charcoal: #1A1410;
+    --warm-dark: #2A1F14;
+    --text-light: #F5EDD8;
+    --text-muted: #A89070;
+    --bg-cream: #FAF5EC;
+    --border-gold: rgba(200,146,42,0.3);
+  }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--charcoal);
+    color: var(--text-light);
+    overflow-x: hidden;
+  }
+ 
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(26,20,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-gold);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 0.02em;
+  }
+  .nav-logo span { color: var(--crimson); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.85rem; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-muted);
+    text-decoration: none; transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold-light); }
+  .nav-cta {
+    background: var(--gold); color: var(--charcoal);
+    padding: 0.55rem 1.4rem; border-radius: 2px;
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; text-decoration: none;
+    transition: background 0.3s;
+  }
+  .nav-cta:hover { background: var(--gold-light); }
+ 
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    background: radial-gradient(ellipse at 60% 50%, #3d1a0a 0%, #1a0d05 40%, #0d0806 100%);
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8922A' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-glow {
+    position: absolute; width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(200,146,42,0.15) 0%, transparent 70%);
+    border-radius: 50%; top: 50%; left: 55%; transform: translate(-50%,-50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.6;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)} }
+ 
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center; max-width: 800px; padding: 0 2rem;
+    animation: fadeUp 1s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+ 
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid var(--border-gold);
+    padding: 0.4rem 1.2rem; margin-bottom: 1.5rem;
+    font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); border-radius: 2px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 900; line-height: 0.95;
+    color: var(--text-light); margin-bottom: 0.2em;
+  }
+  .hero h1 em {
+    font-style: italic; color: var(--gold-light);
+    display: block;
+  }
+  .hero-sub {
+    font-size: 1.05rem; color: var(--text-muted);
+    max-width: 480px; margin: 1.5rem auto 2.5rem;
+    line-height: 1.7; font-weight: 300;
+  }
+  .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--gold); color: var(--charcoal);
+    padding: 0.85rem 2.2rem; border-radius: 2px;
+    font-size: 0.9rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; text-decoration: none;
+    transition: all 0.3s; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-outline {
+    border: 1px solid var(--border-gold); color: var(--text-light);
+    padding: 0.85rem 2.2rem; border-radius: 2px;
+    font-size: 0.9rem; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; text-decoration: none;
+    transition: all 0.3s; display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+ 
+  .hero-scroll {
+    position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    color: var(--text-muted); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px; height: 40px; background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollDrop 2s ease-in-out infinite;
+  }
+  @keyframes scrollDrop { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+ 
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--gold); color: var(--charcoal);
+    display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+  }
+  .stat-item {
+    padding: 1.4rem 3rem; text-align: center;
+    border-right: 1px solid rgba(26,20,16,0.2);
+    flex: 1; min-width: 140px;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900; display: block;
+  }
+  .stat-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+ 
+  /* SECTIONS */
+  section { padding: 6rem 4rem; }
+  .section-label {
+    font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.8rem; display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
+    color: var(--text-light); line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+  .section-title em { font-style: italic; color: var(--gold-light); }
+ 
+  /* ABOUT */
+  .about { background: var(--warm-dark); }
+  .about-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+  }
+  .about-text p {
+    color: var(--text-muted); font-size: 1.05rem; line-height: 1.8;
+    font-weight: 300; margin-bottom: 1.2rem;
+  }
+  .about-text p strong { color: var(--text-light); font-weight: 500; }
+  .divider { width: 60px; height: 2px; background: var(--gold); margin: 2rem 0; }
+  .about-pillars {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 2rem;
+  }
+  .pillar {
+    padding: 1.2rem; border: 1px solid var(--border-gold); border-radius: 4px;
+    background: rgba(200,146,42,0.04);
+  }
+  .pillar-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .pillar h4 {
+    font-size: 0.85rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem;
+  }
+  .pillar p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+  .about-visual {
+    position: relative;
+  }
+  .about-frame {
+    background: linear-gradient(135deg, #3d1a0a, #1a0d05);
+    border: 1px solid var(--border-gold);
+    border-radius: 8px; padding: 3rem;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .about-frame::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(200,146,42,0.1) 0%, transparent 70%);
+  }
+  .flame-art {
+    font-size: 5rem; display: block; margin-bottom: 1rem;
+    animation: flicker 2s ease-in-out infinite alternate;
+  }
+  @keyframes flicker { 0%{transform:rotate(-3deg) scale(0.97)} 100%{transform:rotate(3deg) scale(1.03)} }
+  .about-frame-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-style: italic; color: var(--gold-light);
+    position: relative; z-index: 1;
+    line-height: 1.5;
+  }
+  .about-frame-sub {
+    font-size: 0.8rem; color: var(--text-muted); margin-top: 0.8rem;
+    letter-spacing: 0.1em; text-transform: uppercase; position: relative; z-index: 1;
+  }
+ 
+  /* MENU */
+  .menu-section { background: var(--charcoal); }
+  .menu-section .inner { max-width: 1200px; margin: 0 auto; }
+  .menu-header { text-align: center; margin-bottom: 3.5rem; }
+  .menu-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;
+  }
+  .menu-category {
+    background: var(--warm-dark); border: 1px solid var(--border-gold);
+    border-radius: 6px; overflow: hidden;
+  }
+  .menu-cat-header {
+    background: linear-gradient(135deg, var(--crimson-deep), var(--crimson));
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .menu-cat-header .cat-icon { font-size: 1.3rem; }
+  .menu-cat-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem; font-weight: 700; color: var(--text-light);
+  }
+  .menu-items { padding: 0.5rem 0; }
+  .menu-item {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0.75rem 1.5rem; border-bottom: 1px solid rgba(200,146,42,0.08);
+    transition: background 0.2s;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-item:hover { background: rgba(200,146,42,0.05); }
+  .item-name { font-size: 0.95rem; color: var(--text-light); font-weight: 400; }
+  .item-desc { font-size: 0.78rem; color: var(--text-muted); display: block; margin-top: 2px; }
+  .item-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700; color: var(--gold);
+    white-space: nowrap; margin-left: 1rem;
+  }
+  .popular-badge {
+    font-size: 0.65rem; background: var(--gold); color: var(--charcoal);
+    padding: 1px 6px; border-radius: 2px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+ 
+  /* EXPERIENCE */
+  .experience { background: var(--warm-dark); }
+  .experience .inner { max-width: 1200px; margin: 0 auto; }
+  .exp-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem;
+  }
+  .exp-card {
+    background: var(--charcoal); border: 1px solid var(--border-gold);
+    border-radius: 6px; padding: 2rem; position: relative; overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .exp-card:hover { transform: translateY(-4px); border-color: var(--gold); }
+  .exp-card::before {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(to right, var(--crimson), var(--gold));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .exp-card:hover::before { opacity: 1; }
+  .exp-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+  .exp-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; color: var(--text-light); margin-bottom: 0.6rem;
+  }
+  .exp-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.65; font-weight: 300; }
+ 
+  /* TESTIMONIALS */
+  .testimonials { background: var(--charcoal); }
+  .testimonials .inner { max-width: 1100px; margin: 0 auto; }
+  .testi-header { text-align: center; margin-bottom: 3rem; }
+  .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .testi-card {
+    background: var(--warm-dark); border: 1px solid var(--border-gold);
+    border-radius: 6px; padding: 1.8rem; position: relative;
+  }
+  .testi-stars { color: var(--gold); font-size: 0.9rem; margin-bottom: 1rem; }
+  .testi-quote {
+    font-size: 0.95rem; color: var(--text-light); line-height: 1.7; font-weight: 300;
+    margin-bottom: 1.2rem; font-style: italic;
+  }
+  .testi-quote::before { content: '"'; font-family: 'Playfair Display', serif; font-size: 3rem; color: var(--gold); opacity: 0.3; position: absolute; top: 0.5rem; left: 1.2rem; line-height: 1; }
+  .testi-author { display: flex; align-items: center; gap: 0.8rem; }
+  .testi-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--crimson), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; color: var(--text-light);
+    flex-shrink: 0;
+  }
+  .testi-name { font-size: 0.88rem; font-weight: 600; color: var(--text-light); }
+  .testi-loc { font-size: 0.78rem; color: var(--text-muted); }
+ 
+  /* LOCATION / CTA */
+  .location-cta {
+    background: linear-gradient(135deg, var(--crimson-deep) 0%, #3d0f0f 50%, var(--charcoal) 100%);
+    position: relative; overflow: hidden;
+  }
+  .location-cta::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8922A' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .location-cta .inner {
+    max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start;
+  }
+  .location-cta h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; color: var(--text-light); margin-bottom: 1.5rem; line-height: 1.2;
+  }
+  .location-cta h2 em { font-style: italic; color: var(--gold-light); }
+  .info-row {
+    display: flex; gap: 1rem; margin-bottom: 1.2rem; align-items: flex-start;
+  }
+  .info-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .info-label { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.2rem; }
+  .info-value { font-size: 0.95rem; color: var(--text-light); font-weight: 300; line-height: 1.5; }
+  .map-frame {
+    border: 1px solid var(--border-gold); border-radius: 6px; overflow: hidden;
+    height: 320px; position: relative;
+    background: linear-gradient(135deg, #2A1F14, #1A1410);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1rem;
+  }
+  .map-frame a {
+    background: var(--gold); color: var(--charcoal);
+    padding: 0.8rem 1.8rem; border-radius: 2px;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; text-decoration: none; transition: background 0.3s;
+  }
+  .map-frame a:hover { background: var(--gold-light); }
+  .map-frame p { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 0 1.5rem; }
+  .map-pin { font-size: 3rem; }
+ 
+  /* FOOTER */
+  footer {
+    background: #0d0806; border-top: 1px solid var(--border-gold);
+    padding: 3rem 4rem; text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; font-weight: 900; color: var(--gold-light);
+    margin-bottom: 0.5rem;
+  }
+  .footer-tagline {
+    font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 2rem;
+  }
+  .footer-links { display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
+  .footer-links a { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-copy { font-size: 0.78rem; color: rgba(168,144,112,0.5); }
+ 
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    .about-inner, .location-cta .inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .exp-grid, .testi-grid { grid-template-columns: 1fr; }
+    .menu-grid { grid-template-columns: 1fr; }
+    .about-pillars { grid-template-columns: 1fr; }
+  }
+ 
+  /* ANIMATIONS */
+  [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  [data-reveal].revealed { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Shahi <span>Tikka</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#location">Visit Us</a></li>
+  </ul>
+  <a href="#location" class="nav-cta">Reserve a Table</a>
+</nav>
+ 
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Gatwala Chowk · Lahore Road · Since Est.</div>
+    <h1>Shahi<br><em>Tikka</em></h1>
+    <p class="hero-sub">Where ancient flame-craft meets royal flavour. Lahore's finest open-grill BBQ & desi cuisine, cooked with passion and served with pride.</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-primary">Explore Our Menu</a>
+      <a href="#location" class="btn-outline">Find Us</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+ 
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num">500+</span>
+    <span class="stat-label">Happy Diners Daily</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">30+</span>
+    <span class="stat-label">Signature Dishes</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">4.8★</span>
+    <span class="stat-label">Google Rating</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">15h</span>
+    <span class="stat-label">Open Daily</span>
+  </div>
+</div>
+ 
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <div class="about-text" data-reveal>
+      <span class="section-label">Our Story</span>
+      <h2 class="section-title">Taste the <em>Royal Legacy</em></h2>
+      <div class="divider"></div>
+      <p>Shahi Tikka was born from a simple belief — that <strong>great food deserves great fire</strong>. Nestled at Gatwala Chowk on the Lahore–Faisalabad highway, we've become the must-stop destination for travellers and locals who know that no journey is complete without our tikka.</p>
+      <p>Every piece of meat is marinated for hours in our <strong>signature spice blend</strong>, then kissed by the open coal grill to achieve that perfect smoky char. No shortcuts. No compromises. Only the finest cuts and freshest ingredients.</p>
+      <div class="about-pillars">
+        <div class="pillar">
+          <div class="pillar-icon"></div>
+          <h4>Coal-Fired Grill</h4>
+          <p>Traditional open-flame cooking for authentic smoky flavour</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon"></div>
+          <h4>Premium Cuts</h4>
+          <p>Fresh, quality meat sourced and prepared daily</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon"></div>
+          <h4>Family Dining</h4>
+          <p>A welcoming space for families, groups & gatherings</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon"></div>
+          <h4>Swift Service</h4>
+          <p>Hot food served fresh from the grill to your table</p>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual" data-reveal>
+      <div class="about-frame">
+        <span class="flame-art"></span>
+        <p class="about-frame-text">"Cooked over coal,<br>Served with soul."</p>
+        <p class="about-frame-sub">The Shahi Tikka promise</p>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- MENU -->
+<section class="menu-section" id="menu">
+  <div class="inner">
+    <div class="menu-header" data-reveal>
+      <span class="section-label">What We Serve</span>
+      <h2 class="section-title">Our Signature <em>Menu</em></h2>
+      <p style="color:var(--text-muted);max-width:480px;margin:0.8rem auto 0;font-size:0.95rem;font-weight:300;line-height:1.7;">From sizzling tikkas to hearty karahi — every dish tells a story of flavour.</p>
+    </div>
+    <div class="menu-grid">
+ 
+      <div class="menu-category" data-reveal>
+        <div class="menu-cat-header">
+          <span class="cat-icon"></span>
+          <h3>Tikka & BBQ</h3>
+        </div>
+        <div class="menu-items">
+          <div class="menu-item">
+            <div><span class="item-name">Beef Tikka <span class="popular-badge">★ Best Seller</span></span><span class="item-desc">Marinated premium beef, coal-grilled to perfection</span></div>
+            <span class="item-price">Rs 650</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Chicken Tikka <span class="popular-badge">★ Popular</span></span><span class="item-desc">Tender chicken pieces in our house masala</span></div>
+            <span class="item-price">Rs 450</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Seekh Kebab</span><span class="item-desc">Handcrafted minced meat skewers, spiced & grilled</span></div>
+            <span class="item-price">Rs 350</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Mutton Tikka</span><span class="item-desc">Slow-marinated premium mutton pieces</span></div>
+            <span class="item-price">Rs 850</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Kalmi Boti</span><span class="item-desc">Succulent chicken legs, chargrilled with chilli</span></div>
+            <span class="item-price">Rs 500</span>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="menu-category" data-reveal>
+        <div class="menu-cat-header">
+          <span class="cat-icon"></span>
+          <h3>Karahi & Curries</h3>
+        </div>
+        <div class="menu-items">
+          <div class="menu-item">
+            <div><span class="item-name">Chicken Karahi <span class="popular-badge">★ Popular</span></span><span class="item-desc">Fresh tomato-based karahi with aromatic spices</span></div>
+            <span class="item-price">Rs 800</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Mutton Karahi</span><span class="item-desc">Slow-cooked mutton in rich, bold masala</span></div>
+            <span class="item-price">Rs 1,400</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Beef Karahi</span><span class="item-desc">Tender beef pieces in classic lahori style</span></div>
+            <span class="item-price">Rs 900</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Daal Makhani</span><span class="item-desc">Creamy slow-cooked black lentils, pure comfort</span></div>
+            <span class="item-price">Rs 300</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Aloo Gosht</span><span class="item-desc">Traditional potato & mutton curry, home-style</span></div>
+            <span class="item-price">Rs 750</span>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="menu-category" data-reveal>
+        <div class="menu-cat-header">
+          <span class="cat-icon">🫓</span>
+          <h3>Breads & Sides</h3>
+        </div>
+        <div class="menu-items">
+          <div class="menu-item">
+            <div><span class="item-name">Roghni Naan <span class="popular-badge">★ Popular</span></span><span class="item-desc">Soft, sesame-topped leavened bread from tandoor</span></div>
+            <span class="item-price">Rs 80</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Tandoori Roti</span><span class="item-desc">Whole wheat, freshly baked in our clay oven</span></div>
+            <span class="item-price">Rs 40</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Garlic Naan</span><span class="item-desc">Buttered naan infused with fresh garlic</span></div>
+            <span class="item-price">Rs 120</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Raita & Salad</span><span class="item-desc">Chilled yogurt dip with fresh seasonal salad</span></div>
+            <span class="item-price">Rs 150</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Tikka Masala Sauce</span><span class="item-desc">House special dipping sauce — spicy & tangy</span></div>
+            <span class="item-price">Rs 80</span>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="menu-category" data-reveal>
+        <div class="menu-cat-header">
+          <span class="cat-icon"></span>
+          <h3>Desserts & Drinks</h3>
+        </div>
+        <div class="menu-items">
+          <div class="menu-item">
+            <div><span class="item-name">Shahi Firni <span class="popular-badge">★ House Special</span></span><span class="item-desc">Rose-scented rice pudding with pistachios & gold</span></div>
+            <span class="item-price">Rs 250</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Gulab Jaman</span><span class="item-desc">Soft milk-solid dumplings in rose syrup</span></div>
+            <span class="item-price">Rs 200</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Kheer</span><span class="item-desc">Creamy cardamom rice pudding with almonds</span></div>
+            <span class="item-price">Rs 220</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Lassi (Sweet/Salted)</span><span class="item-desc">Chilled traditional yogurt drink</span></div>
+            <span class="item-price">Rs 120</span>
+          </div>
+          <div class="menu-item">
+            <div><span class="item-name">Doodh Patti Chai</span><span class="item-desc">Rich Pakistani milk tea, strong brew</span></div>
+            <span class="item-price">Rs 80</span>
+          </div>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+</section>
+ 
+<!-- EXPERIENCE -->
+<section class="experience" id="experience">
+  <div class="inner">
+    <div data-reveal>
+      <span class="section-label">The Shahi Experience</span>
+      <h2 class="section-title">More Than a <em>Meal</em></h2>
+    </div>
+    <div class="exp-grid">
+      <div class="exp-card" data-reveal>
+        <span class="exp-icon"></span>
+        <h3>Open Late Every Night</h3>
+        <p>We're open from 9 AM to midnight — whether you're starting your day or ending it, Shahi Tikka is ready with sizzling food fresh off the grill.</p>
+      </div>
+      <div class="exp-card" data-reveal>
+        <span class="exp-icon"></span>
+        <h3>Family-Friendly Space</h3>
+        <p>Our restaurant offers a welcoming, clean environment with dedicated family seating — the perfect setting for celebrations, gatherings, and everyday dining.</p>
+      </div>
+      <div class="exp-card" data-reveal>
+        <span class="exp-icon"></span>
+        <h3>Dine-In & Takeaway</h3>
+        <p>Enjoy your meal in our comfortable dining area, or grab a hot takeaway pack for the road. Perfect for highway travellers and nearby residents alike.</p>
+      </div>
+      <div class="exp-card" data-reveal>
+        <span class="exp-icon"></span>
+        <h3>Master Grill Chefs</h3>
+        <p>Our seasoned chefs have perfected the art of open-flame BBQ over years of practice — every dish leaving our kitchen is a testament to their craft.</p>
+      </div>
+      <div class="exp-card" data-reveal>
+        <span class="exp-icon"></span>
+        <h3>Fresh Daily Preparation</h3>
+        <p>No frozen shortcuts. We prepare all marinades, masalas, and curries fresh each day so every bite carries the full depth of flavour.</p>
+      </div>
+      <div class="exp-card" data-reveal>
+        <span class="exp-icon"></span>
+        <h3>Spotless Hygiene</h3>
+        <p>A clean kitchen is the foundation of great food. Our spotless facilities and food-safety standards ensure every meal is as safe as it is delicious.</p>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="inner">
+    <div class="testi-header" data-reveal>
+      <span class="section-label">What Our Guests Say</span>
+      <h2 class="section-title">Voices of <em>Satisfaction</em></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card" data-reveal>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">The beef tikka here is unlike anything I've had in Lahore. The coal-smoke flavour is perfectly balanced — not overpowering, just right. Will come back every week!</p>
+        <div class="testi-author">
+          <div class="testi-avatar">AK</div>
+          <div>
+            <div class="testi-name">Ahmed Khan</div>
+            <div class="testi-loc">Johar Town, Lahore</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card" data-reveal>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">We stopped here on the way to Faisalabad and it turned into a two-hour dinner. The mutton karahi was phenomenal. Highly recommend for family outings.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SR</div>
+          <div>
+            <div class="testi-name">Sana Rashid</div>
+            <div class="testi-loc">Gulberg, Lahore</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card" data-reveal>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">Best tikka on the entire Lahore–Faisalabad road, no contest. Service is fast, place is clean, and the seekh kebabs melt in your mouth. A true gem.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">UB</div>
+          <div>
+            <div class="testi-name">Usman Butt</div>
+            <div class="testi-loc">Sheikhupura</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- LOCATION CTA -->
+<section class="location-cta" id="location">
+  <div class="inner">
+    <div data-reveal>
+      <span class="section-label">Find Us</span>
+      <h2>Come Visit <em>Shahi Tikka</em></h2>
+      <div class="info-row">
+        <span class="info-icon">📍</span>
+        <div>
+          <div class="info-label">Address</div>
+          <div class="info-value">Gatwala Chowk, Canal Expressway Road<br>Lahore–Sheikhupura Road, Faisalabad</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">🕐</span>
+        <div>
+          <div class="info-label">Opening Hours</div>
+          <div class="info-value">Daily: 9:00 AM – 12:00 Midnight</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">📞</span>
+        <div>
+          <div class="info-label">Reservations & Enquiries</div>
+          <div class="info-value">Call us to book a table for large groups</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">🚗</span>
+        <div>
+          <div class="info-label">Parking</div>
+          <div class="info-value">Free parking available on-site</div>
+        </div>
+      </div>
+      <div style="margin-top:2rem">
+        <a href="#menu" class="btn-primary" style="display:inline-block">View Our Menu</a>
+      </div>
+    </div>
+    <div data-reveal>
+      <div class="map-frame">
+        <div class="map-pin">📌</div>
+        <p>Gatwala Chowk, Canal Expressway,<br>Lahore–Sheikhupura Road</p>
+        <a href="https://maps.app.goo.gl/kErWorrc9XCDKycdA" target="_blank" rel="noopener">Open in Google Maps →</a>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Shahi Tikka</div>
+  <div class="footer-tagline">Lahore's Finest Open-Grill BBQ</div>
+  <div class="footer-links">
+    <a href="#about">Our Story</a>
+    <a href="#menu">Menu</a>
+    <a href="#experience">Experience</a>
+    <a href="#location">Visit Us</a>
+  </div>
+  <div class="footer-copy">© 2025 Shahi Tikka. All rights reserved. · Gatwala Chowk, Lahore Road</div>
+</footer>
+ 
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('revealed'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,1007 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sachi — The Asian Fusion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --ink: #0e0b07;
+      --cream: #f5f0e8;
+      --gold: #c8963e;
+      --gold-light: #e8bf78;
+      --red: #8b2a2a;
+      --mist: #e8e0d0;
+      --text: #2a2118;
+      --text-light: #7a6e60;
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: var(--cream);
+      overflow-x: hidden;
+      cursor: none;
+    }
+ 
+    /* CUSTOM CURSOR */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(200,150,62,0.5);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: left 0.12s ease, top 0.12s ease, width 0.3s ease, height 0.3s ease;
+    }
+    body:hover .cursor { opacity: 1; }
+ 
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 28px 60px;
+      background: linear-gradient(to bottom, rgba(14,11,7,0.95), transparent);
+      transition: background 0.4s;
+    }
+    nav.scrolled { background: rgba(14,11,7,0.98); padding: 18px 60px; }
+    .nav-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--cream); }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--mist); text-decoration: none; opacity: 0.75;
+      transition: opacity 0.3s, color 0.3s;
+      font-weight: 400;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--gold-light); }
+    .nav-cta {
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink); background: var(--gold);
+      padding: 11px 26px; text-decoration: none;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+ 
+    /* HERO */
+    .hero {
+      height: 100vh; position: relative;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 60%, rgba(139,42,42,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 80% at 50% 50%, rgba(200,150,62,0.06) 0%, transparent 60%);
+    }
+    .hero-pattern {
+      position: absolute; inset: 0; opacity: 0.04;
+      background-image:
+        repeating-linear-gradient(45deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 50%),
+        repeating-linear-gradient(-45deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 50%);
+      background-size: 40px 40px;
+    }
+    .hero-ornament {
+      width: 180px; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 0 auto 28px;
+      opacity: 0; animation: fadeUp 1s 0.3s forwards;
+    }
+    .hero-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem; letter-spacing: 0.45em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 22px;
+      opacity: 0; animation: fadeUp 1s 0.5s forwards;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 9vw, 8.5rem);
+      font-weight: 300; line-height: 0.92;
+      letter-spacing: -0.01em; color: var(--cream);
+      opacity: 0; animation: fadeUp 1s 0.7s forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--gold-light); }
+    .hero-subtitle {
+      margin-top: 28px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 300; font-style: italic;
+      color: rgba(245,240,232,0.55); letter-spacing: 0.05em;
+      opacity: 0; animation: fadeUp 1s 0.9s forwards;
+    }
+    .hero-actions {
+      margin-top: 50px; display: flex; gap: 18px; align-items: center;
+      opacity: 0; animation: fadeUp 1s 1.1s forwards;
+    }
+    .btn-primary {
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ink); background: var(--gold);
+      padding: 16px 38px; text-decoration: none; display: inline-block;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-ghost {
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--cream); border: 1px solid rgba(245,240,232,0.3);
+      padding: 16px 38px; text-decoration: none; display: inline-block;
+      transition: border-color 0.3s, color 0.3s, transform 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+    .hero-scroll {
+      position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      opacity: 0; animation: fadeUp 1s 1.5s forwards;
+    }
+    .hero-scroll span {
+      font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(245,240,232,0.4);
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+ 
+    /* INTRO STRIP */
+    .intro-strip {
+      background: var(--gold);
+      padding: 20px 0; overflow: hidden;
+    }
+    .strip-track {
+      display: flex; gap: 60px; white-space: nowrap;
+      animation: stripScroll 20s linear infinite;
+    }
+    .strip-item {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--ink); flex-shrink: 0;
+    }
+    .strip-dot { opacity: 0.4; }
+ 
+    /* SECTION BASE */
+    section { padding: 120px 60px; }
+    .section-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem; letter-spacing: 0.45em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 300; line-height: 1.05;
+      color: var(--cream);
+    }
+    .section-title em { font-style: italic; color: var(--gold-light); }
+    .divider {
+      width: 60px; height: 1px; background: var(--gold);
+      margin: 28px 0;
+    }
+ 
+    /* ABOUT */
+    .about { background: var(--ink); }
+    .about-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center;
+    }
+    .about-visual {
+      position: relative; aspect-ratio: 3/4; max-height: 600px;
+    }
+    .about-frame {
+      position: absolute; inset: 0;
+      border: 1px solid rgba(200,150,62,0.25);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .about-frame-inner {
+      position: absolute; inset: 16px;
+      background: linear-gradient(135deg, rgba(139,42,42,0.12), rgba(200,150,62,0.08), rgba(14,11,7,0.95));
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 16px;
+    }
+    .about-icon {
+      font-size: 5rem; opacity: 0.6;
+      animation: float 6s ease-in-out infinite;
+    }
+    .about-frame-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; font-style: italic;
+      color: rgba(200,150,62,0.5); letter-spacing: 0.1em;
+      text-align: center; padding: 0 30px;
+    }
+    .about-corner {
+      position: absolute; width: 24px; height: 24px;
+      border-color: var(--gold); border-style: solid; opacity: 0.6;
+    }
+    .about-corner.tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .about-corner.tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+    .about-corner.bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+    .about-corner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+    .about-text p {
+      font-size: 1.05rem; line-height: 1.85; color: rgba(245,240,232,0.65);
+      margin-bottom: 20px; font-weight: 300;
+    }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 48px;
+    }
+    .stat-block { border-left: 1px solid rgba(200,150,62,0.3); padding-left: 20px; }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem; font-weight: 300; color: var(--gold);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(245,240,232,0.4); margin-top: 4px;
+    }
+ 
+    /* CUISINE PILLARS */
+    .pillars { background: #0a0806; }
+    .pillars-header { text-align: center; max-width: 600px; margin: 0 auto 80px; }
+    .pillars-header .divider { margin: 28px auto; }
+    .pillars-header p { color: rgba(245,240,232,0.55); line-height: 1.8; font-weight: 300; }
+    .pillars-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+    }
+    .pillar {
+      padding: 50px 30px; text-align: center;
+      border: 1px solid rgba(200,150,62,0.12);
+      position: relative; overflow: hidden;
+      transition: border-color 0.4s, background 0.4s;
+    }
+    .pillar::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(200,150,62,0.05), transparent);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .pillar:hover { border-color: rgba(200,150,62,0.4); }
+    .pillar:hover::before { opacity: 1; }
+    .pillar-icon { font-size: 2.8rem; margin-bottom: 24px; display: block; }
+    .pillar-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 14px;
+    }
+    .pillar-desc {
+      font-size: 0.88rem; line-height: 1.8;
+      color: rgba(245,240,232,0.45); font-weight: 300;
+    }
+ 
+    /* SIGNATURE DISHES */
+    .menu { background: var(--ink); }
+    .menu-header { max-width: 1200px; margin: 0 auto 70px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .menu-tabs {
+      display: flex; gap: 0; border: 1px solid rgba(200,150,62,0.2);
+    }
+    .menu-tab {
+      font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 10px 24px; cursor: pointer; border: none; background: transparent;
+      color: rgba(245,240,232,0.4); transition: all 0.3s;
+    }
+    .menu-tab.active { background: var(--gold); color: var(--ink); }
+    .menu-tab:hover:not(.active) { color: var(--gold); }
+    .dishes-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    }
+    .dish-card {
+      border: 1px solid rgba(200,150,62,0.1);
+      padding: 0; overflow: hidden; position: relative;
+      transition: border-color 0.4s;
+      display: none;
+    }
+    .dish-card.active { display: block; }
+    .dish-card:hover { border-color: rgba(200,150,62,0.35); }
+    .dish-visual {
+      height: 200px;
+      background: linear-gradient(135deg, rgba(139,42,42,0.15), rgba(200,150,62,0.08), rgba(14,11,7,0.8));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem; position: relative; overflow: hidden;
+    }
+    .dish-visual::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(14,11,7,0.6));
+    }
+    .dish-info { padding: 24px; }
+    .dish-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 400; color: var(--cream);
+      margin-bottom: 8px;
+    }
+    .dish-origin {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 12px;
+    }
+    .dish-desc {
+      font-size: 0.85rem; line-height: 1.75;
+      color: rgba(245,240,232,0.45); font-weight: 300;
+    }
+    .dish-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; color: var(--gold-light); margin-top: 16px;
+    }
+ 
+    /* EXPERIENCE */
+    .experience {
+      background: linear-gradient(to bottom, #0a0806, var(--ink));
+      text-align: center; padding: 120px 60px;
+    }
+    .exp-grid {
+      max-width: 900px; margin: 70px auto 0;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 50px;
+    }
+    .exp-item {}
+    .exp-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem; font-weight: 300;
+      color: transparent; -webkit-text-stroke: 1px rgba(200,150,62,0.4);
+      line-height: 1;
+    }
+    .exp-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--gold); margin: 14px 0 12px;
+    }
+    .exp-desc {
+      font-size: 0.88rem; line-height: 1.8;
+      color: rgba(245,240,232,0.4); font-weight: 300;
+    }
+ 
+    /* RESERVATION */
+    .reservation {
+      background: #070503;
+      display: grid; grid-template-columns: 1fr 1fr; min-height: 600px;
+    }
+    .res-left {
+      padding: 100px 80px;
+      background: linear-gradient(135deg, rgba(139,42,42,0.12) 0%, transparent 60%);
+      border-right: 1px solid rgba(200,150,62,0.1);
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .res-right { padding: 100px 80px; display: flex; flex-direction: column; justify-content: center; }
+    .res-form { display: flex; flex-direction: column; gap: 18px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .field label {
+      display: block; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(245,240,232,0.4); margin-bottom: 8px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; background: rgba(245,240,232,0.04);
+      border: 1px solid rgba(200,150,62,0.2); color: var(--cream);
+      padding: 14px 16px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; outline: none;
+      transition: border-color 0.3s, background 0.3s;
+      appearance: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--gold); background: rgba(200,150,62,0.05);
+    }
+    .field select option { background: var(--ink); }
+    .field textarea { resize: vertical; min-height: 90px; }
+    .form-submit {
+      margin-top: 8px;
+      background: var(--gold); color: var(--ink);
+      border: none; padding: 18px 40px;
+      font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.3em;
+      text-transform: uppercase; cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .form-submit:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .res-info { margin-top: 40px; }
+    .res-info-item {
+      display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-start;
+    }
+    .res-info-icon { font-size: 1.2rem; margin-top: 2px; opacity: 0.6; }
+    .res-info-text {}
+    .res-info-title {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 4px;
+    }
+    .res-info-val { font-size: 0.9rem; color: rgba(245,240,232,0.6); font-weight: 300; }
+ 
+    /* FOOTER */
+    footer {
+      background: #040302;
+      border-top: 1px solid rgba(200,150,62,0.1);
+      padding: 60px 60px 40px;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+      padding-bottom: 50px; border-bottom: 1px solid rgba(200,150,62,0.08);
+    }
+    .footer-brand-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem; letter-spacing: 0.25em; color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .footer-brand-sub {
+      font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(245,240,232,0.3); margin-bottom: 20px;
+    }
+    .footer-brand-desc {
+      font-size: 0.88rem; line-height: 1.8;
+      color: rgba(245,240,232,0.35); font-weight: 300;
+    }
+    .footer-col-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul a {
+      font-size: 0.85rem; color: rgba(245,240,232,0.4); text-decoration: none;
+      transition: color 0.3s; font-weight: 300;
+    }
+    .footer-col ul a:hover { color: var(--gold-light); }
+    .footer-bottom {
+      padding-top: 30px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-copy {
+      font-size: 0.75rem; color: rgba(245,240,232,0.2); font-weight: 300;
+    }
+    .footer-social { display: flex; gap: 18px; }
+    .social-link {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(200,150,62,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(245,240,232,0.4); text-decoration: none; font-size: 0.75rem;
+      transition: border-color 0.3s, color 0.3s, background 0.3s;
+    }
+    .social-link:hover { border-color: var(--gold); color: var(--gold); background: rgba(200,150,62,0.08); }
+ 
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.15); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes stripScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+ 
+    /* MOBILE */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
+      .nav-links { display: none; }
+      section { padding: 80px 24px; }
+      .about-grid { grid-template-columns: 1fr; gap: 50px; }
+      .pillars-grid { grid-template-columns: 1fr 1fr; }
+      .dishes-grid { grid-template-columns: 1fr; }
+      .menu-header { flex-direction: column; gap: 24px; align-items: flex-start; }
+      .exp-grid { grid-template-columns: 1fr; gap: 36px; }
+      .reservation { grid-template-columns: 1fr; }
+      .res-left { padding: 60px 24px; }
+      .res-right { padding: 60px 24px; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .footer-bottom { flex-direction: column; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+ 
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+ 
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">SACHI <span>餐廳</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">Story</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#reserve">Reservations</a></li>
+    </ul>
+    <a href="#reserve" class="nav-cta">Reserve a Table</a>
+  </nav>
+ 
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-pattern"></div>
+    <div class="hero-ornament"></div>
+    <p class="hero-eyebrow">Faisalabad · Pakistan</p>
+    <h1 class="hero-title">Sachi<br><em>The Asian Fusion</em></h1>
+    <p class="hero-subtitle">Where ancient traditions meet modern artistry</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-primary">Explore Menu</a>
+      <a href="#reserve" class="btn-ghost">Make Reservation</a>
+    </div>
+    <div class="hero-scroll">
+      <span>Discover</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+ 
+  <!-- STRIP -->
+  <div class="intro-strip">
+    <div class="strip-track" id="stripTrack">
+      <span class="strip-item">Japanese</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Chinese</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Thai</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Korean</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Vietnamese</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Malaysian</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Pan-Asian</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Fusion</span>
+      <span class="strip-item strip-dot">✦</span>
+      <!-- duplicate for seamless loop -->
+      <span class="strip-item">Japanese</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Chinese</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Thai</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Korean</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Vietnamese</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Malaysian</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Pan-Asian</span>
+      <span class="strip-item strip-dot">✦</span>
+      <span class="strip-item">Fusion</span>
+      <span class="strip-item strip-dot">✦</span>
+    </div>
+  </div>
+ 
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="about-grid">
+      <div class="about-visual reveal">
+        <div class="about-frame">
+          <div class="about-frame-inner">
+            <div class="about-icon">🍜</div>
+            <div class="about-frame-text">"Where east meets west on every plate"</div>
+          </div>
+          <div class="about-corner tl"></div>
+          <div class="about-corner tr"></div>
+          <div class="about-corner bl"></div>
+          <div class="about-corner br"></div>
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <p class="section-label">Our Story</p>
+        <h2 class="section-title">A Journey<br>Across <em>Asia</em></h2>
+        <div class="divider"></div>
+        <p>Sachi — meaning "bliss" in Japanese — was born from a simple belief: that the diverse cuisines of Asia, when brought together with care and creativity, can create something truly extraordinary.</p>
+        <p>Located in the heart of Faisalabad, our kitchen is guided by chefs who have trained across Japan, China, Thailand, and beyond — bringing authentic flavors home and reimagining them for the modern palate.</p>
+        <p>Every dish tells a story. Every meal is an invitation to travel without leaving your seat.</p>
+        <div class="about-stats">
+          <div class="stat-block">
+            <div class="stat-num">8+</div>
+            <div class="stat-label">Asian cuisines</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-num">60+</div>
+            <div class="stat-label">Signature dishes</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-num">5★</div>
+            <div class="stat-label">Guest experience</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Fresh ingredients</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- PILLARS -->
+  <section class="pillars">
+    <div class="pillars-header reveal">
+      <p class="section-label">Our Craft</p>
+      <h2 class="section-title">The Art of <em>Fusion</em></h2>
+      <div class="divider"></div>
+      <p>We draw from the ancient culinary traditions of Asia, combining bold spices, delicate techniques, and premium ingredients into a dining experience unlike any other.</p>
+    </div>
+    <div class="pillars-grid">
+      <div class="pillar reveal">
+        <span class="pillar-icon">🍣</span>
+        <div class="pillar-name">Japanese</div>
+        <p class="pillar-desc">Precision, simplicity, and reverence for ingredient purity — sushi, ramen, and robata-grilled creations.</p>
+      </div>
+      <div class="pillar reveal">
+        <span class="pillar-icon">🥢</span>
+        <div class="pillar-name">Chinese</div>
+        <p class="pillar-desc">Dim sum artistry, wok-fired mastery, and the deep umami of centuries-old sauces and broths.</p>
+      </div>
+      <div class="pillar reveal">
+        <span class="pillar-icon">🌿</span>
+        <div class="pillar-name">Thai &amp; SEA</div>
+        <p class="pillar-desc">Fragrant herbs, layered curries, and the perfect balance of sweet, sour, salty, and spicy.</p>
+      </div>
+      <div class="pillar reveal">
+        <span class="pillar-icon">🔥</span>
+        <div class="pillar-name">Korean</div>
+        <p class="pillar-desc">Fermented depth, bold marinades, and the communal joy of Korean BBQ and bibimbap traditions.</p>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- MENU -->
+  <section class="menu" id="menu">
+    <div class="menu-header reveal">
+      <div>
+        <p class="section-label">Signature Creations</p>
+        <h2 class="section-title">Our <em>Menu</em></h2>
+      </div>
+      <div class="menu-tabs">
+        <button class="menu-tab active" onclick="filterMenu('starters')">Starters</button>
+        <button class="menu-tab" onclick="filterMenu('mains')">Mains</button>
+        <button class="menu-tab" onclick="filterMenu('desserts')">Desserts</button>
+      </div>
+    </div>
+    <div class="dishes-grid reveal">
+      <!-- Starters -->
+      <div class="dish-card active" data-cat="starters">
+        <div class="dish-visual">🥟</div>
+        <div class="dish-info">
+          <div class="dish-origin">Chinese · Dim Sum</div>
+          <div class="dish-name">Sachi Har Gow</div>
+          <p class="dish-desc">Translucent prawn dumplings, steamed to perfection, served with ginger-chilli oil and black vinegar.</p>
+          <div class="dish-price">PKR 850</div>
+        </div>
+      </div>
+      <div class="dish-card active" data-cat="starters">
+        <div class="dish-visual">🥗</div>
+        <div class="dish-info">
+          <div class="dish-origin">Thai · Fresh</div>
+          <div class="dish-name">Som Tum Fusion</div>
+          <p class="dish-desc">Green papaya salad with toasted peanuts, cherry tomatoes, crispy shallots, and tangy tamarind dressing.</p>
+          <div class="dish-price">PKR 700</div>
+        </div>
+      </div>
+      <div class="dish-card active" data-cat="starters">
+        <div class="dish-visual">🍤</div>
+        <div class="dish-info">
+          <div class="dish-origin">Japanese · Fried</div>
+          <div class="dish-name">Ebi Katsu</div>
+          <p class="dish-desc">Panko-crusted king prawns, golden-fried, served with house-made tonkatsu sauce and pickled daikon.</p>
+          <div class="dish-price">PKR 950</div>
+        </div>
+      </div>
+      <!-- Mains -->
+      <div class="dish-card" data-cat="mains">
+        <div class="dish-visual">🍜</div>
+        <div class="dish-info">
+          <div class="dish-origin">Japanese · Noodle</div>
+          <div class="dish-name">Tonkotsu Ramen</div>
+          <p class="dish-desc">Rich pork bone broth simmered 18 hours, chashu pork belly, soft-boiled marinated egg, nori, and menma.</p>
+          <div class="dish-price">PKR 1,250</div>
+        </div>
+      </div>
+      <div class="dish-card" data-cat="mains">
+        <div class="dish-visual">🍛</div>
+        <div class="dish-info">
+          <div class="dish-origin">Thai · Curry</div>
+          <div class="dish-name">Green Curry Seabass</div>
+          <p class="dish-desc">Creamy coconut green curry with pan-seared seabass, Thai basil, bamboo shoots, and steamed jasmine rice.</p>
+          <div class="dish-price">PKR 1,600</div>
+        </div>
+      </div>
+      <div class="dish-card" data-cat="mains">
+        <div class="dish-visual">🥩</div>
+        <div class="dish-info">
+          <div class="dish-origin">Korean · BBQ</div>
+          <div class="dish-name">Galbi Beef Short Ribs</div>
+          <p class="dish-desc">Marinated in soy, sesame, and Asian pear. Grilled tableside, served with banchan and steamed rice.</p>
+          <div class="dish-price">PKR 2,100</div>
+        </div>
+      </div>
+      <!-- Desserts -->
+      <div class="dish-card" data-cat="desserts">
+        <div class="dish-visual">🍡</div>
+        <div class="dish-info">
+          <div class="dish-origin">Japanese · Sweet</div>
+          <div class="dish-name">Matcha Mochi Trio</div>
+          <p class="dish-desc">Hand-rolled mochi filled with matcha cream, red bean, and yuzu curd — dusted with ceremonial matcha powder.</p>
+          <div class="dish-price">PKR 620</div>
+        </div>
+      </div>
+      <div class="dish-card" data-cat="desserts">
+        <div class="dish-visual">🍮</div>
+        <div class="dish-info">
+          <div class="dish-origin">Pan-Asian · Fusion</div>
+          <div class="dish-name">Pandan Crème Brûlée</div>
+          <p class="dish-desc">Silky pandan-infused custard, caramelized sugar crust, served with coconut sorbet and sesame tuile.</p>
+          <div class="dish-price">PKR 580</div>
+        </div>
+      </div>
+      <div class="dish-card" data-cat="desserts">
+        <div class="dish-visual">🧁</div>
+        <div class="dish-info">
+          <div class="dish-origin">Chinese · Sweet</div>
+          <div class="dish-name">Black Sesame Pudding</div>
+          <p class="dish-desc">Traditional black sesame soup reinvented as a silken pudding with osmanthus jelly and lychee sorbet.</p>
+          <div class="dish-price">PKR 540</div>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- EXPERIENCE -->
+  <section class="experience" id="experience">
+    <p class="section-label reveal">Why Sachi</p>
+    <h2 class="section-title reveal">An Unforgettable <em>Experience</em></h2>
+    <div class="exp-grid">
+      <div class="exp-item reveal">
+        <div class="exp-num">01</div>
+        <div class="exp-title">Curated Ambiance</div>
+        <p class="exp-desc">An intimate dining room designed to transport — warm lanterns, natural textures, and quiet elegance.</p>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-num">02</div>
+        <div class="exp-title">Artisan Chefs</div>
+        <p class="exp-desc">Our culinary team trained across Asia, bringing genuine technique and passion to every dish prepared.</p>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-num">03</div>
+        <div class="exp-title">Impeccable Service</div>
+        <p class="exp-desc">Warm, attentive, and knowledgeable — our team guides you through every dish and pairing effortlessly.</p>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- RESERVATION -->
+  <section class="reservation" id="reserve">
+    <div class="res-left">
+      <p class="section-label">Reserve</p>
+      <h2 class="section-title">Book Your<br><em>Table</em></h2>
+      <div class="divider"></div>
+      <div class="res-info">
+        <div class="res-info-item">
+          <span class="res-info-icon">📍</span>
+          <div class="res-info-text">
+            <div class="res-info-title">Location</div>
+            <div class="res-info-val">Faisalabad, Punjab, Pakistan</div>
+          </div>
+        </div>
+        <div class="res-info-item">
+          <span class="res-info-icon">🕐</span>
+          <div class="res-info-text">
+            <div class="res-info-title">Hours</div>
+            <div class="res-info-val">Lunch: 12:00 PM – 3:30 PM<br>Dinner: 6:30 PM – 11:00 PM</div>
+          </div>
+        </div>
+        <div class="res-info-item">
+          <span class="res-info-icon">📞</span>
+          <div class="res-info-text">
+            <div class="res-info-title">Contact</div>
+            <div class="res-info-val">+92 (0) 300 000 0000</div>
+          </div>
+        </div>
+        <div class="res-info-item">
+          <span class="res-info-icon">✉️</span>
+          <div class="res-info-text">
+            <div class="res-info-title">Email</div>
+            <div class="res-info-val">hello@sachiasianfusion.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="res-right">
+      <div class="res-form">
+        <div class="form-row">
+          <div class="field">
+            <label>First Name</label>
+            <input type="text" placeholder="Your name" />
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <input type="text" placeholder="Family name" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Phone</label>
+            <input type="tel" placeholder="+92 3251887777" />
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" placeholder="your@email.com" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" />
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <select>
+              <option value="">Select time</option>
+              <option>12:00 PM</option>
+              <option>12:30 PM</option>
+              <option>1:00 PM</option>
+              <option>1:30 PM</option>
+              <option>2:00 PM</option>
+              <option>6:30 PM</option>
+              <option>7:00 PM</option>
+              <option>7:30 PM</option>
+              <option>8:00 PM</option>
+              <option>8:30 PM</option>
+              <option>9:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Guests</label>
+          <select>
+            <option>1 guest</option>
+            <option selected>2 guests</option>
+            <option>3 guests</option>
+            <option>4 guests</option>
+            <option>5 guests</option>
+            <option>6+ guests — we'll call you</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Special Requests</label>
+          <textarea placeholder="Dietary requirements, celebrations, or anything else…"></textarea>
+        </div>
+        <button class="form-submit" onclick="handleReservation()">Confirm Reservation</button>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">SACHI</div>
+        <div class="footer-brand-sub">The Asian Fusion · Faisalabad</div>
+        <p class="footer-brand-desc">A celebration of Asia's most beloved culinary traditions, reimagined for the discerning palate of Faisalabad.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Navigate</div>
+        <ul>
+          <li><a href="#about">Our Story</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#reserve">Reservations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Cuisine</div>
+        <ul>
+          <li><a href="#">Japanese</a></li>
+          <li><a href="#">Chinese</a></li>
+          <li><a href="#">Thai</a></li>
+          <li><a href="#">Korean</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Hours</div>
+        <ul>
+          <li><a href="#">Lunch 12–3:30 PM</a></li>
+          <li><a href="#">Dinner 6:30–11 PM</a></li>
+          <li><a href="#">Private Events</a></li>
+          <li><a href="#">Catering</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Sachi — The Asian Fusion. All rights reserved.</p>
+      <div class="footer-social">
+        <a href="#" class="social-link">IG</a>
+        <a href="#" class="social-link">FB</a>
+        <a href="#" class="social-link">TT</a>
+      </div>
+    </div>
+  </footer>
+ 
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .menu-tab').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '20px'; cursor.style.height = '20px';
+        ring.style.width = '56px'; ring.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '10px'; cursor.style.height = '10px';
+        ring.style.width = '36px'; ring.style.height = '36px';
+      });
+    });
+ 
+    // Nav scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+ 
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          const delay = Array.from(e.target.parentElement.children).indexOf(e.target) * 80;
+          setTimeout(() => e.target.classList.add('visible'), delay);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(r => observer.observe(r));
+ 
+    // Menu filter
+    function filterMenu(cat) {
+      document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.dish-card').forEach(c => {
+        c.classList.toggle('active', c.dataset.cat === cat);
+      });
+    }
+ 
+    // Reservation
+    function handleReservation() {
+      const btn = document.querySelector('.form-submit');
+      btn.textContent = '✓ Reservation Confirmed — We\'ll be in touch!';
+      btn.style.background = '#3a6b3a';
+      btn.style.color = '#d4f0d4';
+      setTimeout(() => {
+        btn.textContent = 'Confirm Reservation';
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

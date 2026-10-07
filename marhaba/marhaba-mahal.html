@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marhaba Mahal — Faisalabad's Royal Dining Experience</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --emerald:#1A4A35;
+  --emerald-mid:#236048;
+  --emerald-bright:#2E7D5A;
+  --emerald-light:#3DA876;
+  --gold:#BFA05A;
+  --gold-bright:#D4B46A;
+  --gold-pale:#F5EDD0;
+  --ivory:#FAF7F0;
+  --ivory-dark:#F0EAD8;
+  --brass:#8B6914;
+  --deep:#0D2A1E;
+  --text-dark:#1C1209;
+  --text-mid:#4A3A28;
+  --text-muted:#8A7A60;
+  --white:#FFFFFF;
+  --border-gold:rgba(191,160,90,0.25);
+  --border-emerald:rgba(26,74,53,0.15);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--text-dark);overflow-x:hidden}
+
+/* ── PATTERN SVG as base64 inline ── */
+.pattern-bg{background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%23BFA05A' stroke-width='0.4' stroke-opacity='0.18'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M40 10 L70 40 L40 70 L10 40 Z'/%3E%3Ccircle cx='40' cy='40' r='8'/%3E%3Cpath d='M40 0 L40 80 M0 40 L80 40'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 3.5rem;
+  background:rgba(13,42,30,0.96);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(191,160,90,0.2);
+  transition:padding 0.3s;
+}
+.nav-brand{display:flex;flex-direction:column;line-height:1}
+.nav-brand-main{
+  font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;
+  color:var(--gold-bright);letter-spacing:0.04em;
+}
+.nav-brand-sub{font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:rgba(191,160,90,0.6);margin-top:1px}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+.nav-links a{
+  font-size:0.78rem;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;
+  color:rgba(245,237,208,0.7);text-decoration:none;transition:color 0.3s;
+}
+.nav-links a:hover{color:var(--gold-bright)}
+.nav-reserve{
+  background:transparent;border:1px solid var(--gold);color:var(--gold);
+  padding:0.6rem 1.5rem;font-size:0.75rem;font-weight:500;letter-spacing:0.12em;
+  text-transform:uppercase;text-decoration:none;transition:all 0.3s;
+}
+.nav-reserve:hover{background:var(--gold);color:var(--deep)}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  background:var(--deep);
+  position:relative;overflow:hidden;
+}
+.hero-pattern{
+  position:absolute;inset:0;opacity:1;
+}
+.hero-pattern svg{width:100%;height:100%;position:absolute;inset:0}
+.hero-overlay{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 90% at 30% 50%, rgba(26,74,53,0.5) 0%, transparent 70%),
+             radial-gradient(ellipse 60% 80% at 80% 60%, rgba(191,160,90,0.08) 0%, transparent 60%),
+             linear-gradient(180deg, rgba(13,42,30,0.4) 0%, rgba(13,42,30,0.8) 100%);
+}
+.hero-content{
+  position:relative;z-index:2;
+  max-width:760px;padding:0 3.5rem;
+  margin-top:5rem;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:1rem;
+  margin-bottom:2rem;
+}
+.hero-eyebrow-line{width:40px;height:1px;background:var(--gold);flex-shrink:0}
+.hero-eyebrow-text{
+  font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--gold);font-weight:400;
+}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.8rem,7vw,6.5rem);
+  font-weight:300;line-height:1.0;
+  color:var(--ivory);margin-bottom:0.15em;
+}
+.hero h1 strong{
+  font-weight:700;color:var(--gold-bright);
+  font-style:italic;display:block;
+}
+.hero-urdu{
+  font-size:1.4rem;color:rgba(245,237,208,0.35);
+  font-weight:300;letter-spacing:0.05em;
+  margin-bottom:1.8rem;font-style:italic;
+  font-family:'Cormorant Garamond',serif;
+}
+.hero-desc{
+  font-size:1rem;color:rgba(245,237,208,0.65);
+  max-width:500px;line-height:1.85;font-weight:300;
+  margin-bottom:2.8rem;
+}
+.hero-actions{display:flex;gap:1.2rem;flex-wrap:wrap}
+.btn-gold{
+  background:var(--gold);color:var(--deep);
+  padding:0.9rem 2.4rem;font-size:0.82rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;
+  display:inline-block;transition:all 0.3s;
+}
+.btn-gold:hover{background:var(--gold-bright);transform:translateY(-2px)}
+.btn-ghost{
+  border:1px solid rgba(191,160,90,0.4);color:var(--gold-pale);
+  padding:0.9rem 2.4rem;font-size:0.82rem;font-weight:400;
+  letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;
+  display:inline-block;transition:all 0.3s;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+
+.hero-scroll{
+  position:absolute;bottom:3rem;left:3.5rem;
+  display:flex;align-items:center;gap:1rem;z-index:2;
+}
+.hero-scroll-line{
+  width:50px;height:1px;background:linear-gradient(to right,var(--gold),transparent);
+}
+.hero-scroll-text{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(191,160,90,0.5)}
+
+.hero-badge{
+  position:absolute;bottom:3rem;right:3.5rem;z-index:2;
+  border:1px solid var(--border-gold);
+  padding:1.2rem 1.5rem;text-align:center;
+  background:rgba(13,42,30,0.6);backdrop-filter:blur(8px);
+}
+.hero-badge-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.2rem;font-weight:700;color:var(--gold-bright);
+  display:block;line-height:1;
+}
+.hero-badge-label{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(191,160,90,0.6);margin-top:0.3rem}
+
+/* ── RIBBON ── */
+.ribbon{
+  background:var(--gold);
+  display:flex;justify-content:center;align-items:center;gap:0;
+  overflow:hidden;
+}
+.ribbon-item{
+  padding:1.1rem 2.5rem;text-align:center;
+  border-right:1px solid rgba(13,42,30,0.15);
+  flex:1;min-width:120px;
+}
+.ribbon-item:last-child{border-right:none}
+.ribbon-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.8rem;font-weight:700;color:var(--deep);
+  display:block;line-height:1;
+}
+.ribbon-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(13,42,30,0.6);margin-top:0.2rem}
+
+/* ── SECTION BASE ── */
+section{padding:7rem 3.5rem}
+.section-tag{
+  display:inline-flex;align-items:center;gap:0.8rem;
+  margin-bottom:1rem;
+}
+.section-tag-line{width:30px;height:1px;background:var(--gold)}
+.section-tag-text{font-size:0.68rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);font-weight:400}
+.section-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.2rem,4vw,3.4rem);font-weight:300;
+  color:var(--text-dark);line-height:1.15;margin-bottom:1rem;
+}
+.section-title em{font-style:italic;color:var(--emerald);font-weight:600}
+.section-title-white{color:var(--ivory)}
+.section-title-white em{color:var(--gold-bright)}
+
+/* ── ABOUT ── */
+.about{background:var(--ivory);position:relative}
+.about-inner{
+  max-width:1280px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;
+}
+.about-text p{
+  color:var(--text-mid);font-size:1rem;line-height:1.9;font-weight:300;
+  margin-bottom:1.2rem;
+}
+.about-text p strong{color:var(--emerald);font-weight:500}
+.about-divider{
+  width:80px;height:1px;
+  background:linear-gradient(to right,var(--gold),transparent);
+  margin:2rem 0;
+}
+.about-values{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
+.about-val{
+  padding:1.2rem;
+  border-top:2px solid var(--gold);
+  background:var(--ivory-dark);
+}
+.about-val-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;font-weight:600;color:var(--emerald);
+  margin-bottom:0.3rem;
+}
+.about-val-text{font-size:0.82rem;color:var(--text-muted);line-height:1.55;font-weight:300}
+
+.about-visual{position:relative}
+.palace-card{
+  background:var(--emerald);
+  padding:3.5rem 3rem;position:relative;overflow:hidden;
+}
+.palace-card::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23BFA05A' stroke-width='0.5' stroke-opacity='0.12'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M40 10 L70 40 L40 70 L10 40 Z'/%3E%3Ccircle cx='40' cy='40' r='8'/%3E%3C/g%3E%3C/svg%3E");
+}
+.palace-arch{
+  text-align:center;position:relative;z-index:1;
+  border:1px solid rgba(191,160,90,0.25);
+  padding:2.5rem 2rem;
+}
+.arch-ornament{font-size:3.5rem;display:block;margin-bottom:1rem;opacity:0.8}
+.palace-quote{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.5rem;font-style:italic;font-weight:300;
+  color:var(--gold-pale);line-height:1.5;margin-bottom:1rem;
+}
+.palace-attr{
+  font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:rgba(191,160,90,0.5);
+}
+.palace-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border-top:1px solid rgba(191,160,90,0.15);margin-top:2rem;position:relative;z-index:1;
+}
+.ps-item{
+  padding:1.2rem;text-align:center;
+  border-right:1px solid rgba(191,160,90,0.15);
+}
+.ps-item:nth-child(even){border-right:none}
+.ps-item:nth-child(3),.ps-item:nth-child(4){border-top:1px solid rgba(191,160,90,0.15)}
+.ps-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.6rem;font-weight:700;color:var(--gold-bright);display:block;
+}
+.ps-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(191,160,90,0.5)}
+
+/* ── HALLS ── */
+.halls{background:var(--emerald);position:relative}
+.halls::before{
+  content:'';position:absolute;inset:0;opacity:0.6;
+  background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23BFA05A' stroke-width='0.5' stroke-opacity='0.1'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M40 10 L70 40 L40 70 L10 40 Z'/%3E%3Ccircle cx='40' cy='40' r='8'/%3E%3C/g%3E%3C/svg%3E");
+}
+.halls .inner{max-width:1280px;margin:0 auto;position:relative;z-index:1}
+.halls-header{text-align:center;margin-bottom:4rem}
+.halls-header .section-tag{justify-content:center}
+.halls-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;
+  background:rgba(191,160,90,0.15);
+}
+.hall-card{
+  background:rgba(13,42,30,0.7);
+  padding:2.2rem 2rem;
+  transition:background 0.4s;
+  cursor:default;position:relative;overflow:hidden;
+}
+.hall-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--gold);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.4s;
+}
+.hall-card:hover{background:rgba(13,42,30,0.95)}
+.hall-card:hover::after{transform:scaleX(1)}
+.hall-icon{font-size:2rem;margin-bottom:1rem;display:block}
+.hall-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem;font-weight:600;color:var(--gold-bright);
+  margin-bottom:0.5rem;
+}
+.hall-desc{font-size:0.85rem;color:rgba(245,237,208,0.5);line-height:1.6;font-weight:300}
+.hall-tag{
+  margin-top:1rem;display:inline-block;
+  font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;
+  border:1px solid rgba(191,160,90,0.25);
+  padding:0.25rem 0.7rem;color:rgba(191,160,90,0.5);
+}
+
+/* ── MENU ── */
+.menu-section{background:var(--ivory);position:relative}
+.menu-section .inner{max-width:1280px;margin:0 auto}
+.menu-header{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;
+  align-items:end;margin-bottom:4rem;
+}
+.menu-header-right{
+  font-size:0.92rem;color:var(--text-muted);line-height:1.8;font-weight:300;
+  align-self:end;
+}
+.menu-tabs{
+  display:flex;gap:0;margin-bottom:2.5rem;
+  border-bottom:1px solid var(--border-emerald);
+}
+.menu-tab{
+  padding:0.8rem 2rem;font-size:0.78rem;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text-muted);cursor:pointer;border:none;background:none;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:all 0.3s;
+}
+.menu-tab:hover{color:var(--emerald)}
+.menu-tab.active{color:var(--emerald);border-bottom-color:var(--emerald)}
+.menu-panel{display:none}
+.menu-panel.active{display:block}
+.menu-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:0;
+  border:1px solid var(--border-emerald);
+}
+.menu-cat{border-right:1px solid var(--border-emerald)}
+.menu-cat:nth-child(2n){border-right:none}
+.menu-cat:nth-child(n+3){border-top:1px solid var(--border-emerald)}
+.menu-cat-head{
+  background:var(--emerald);
+  padding:1rem 1.5rem;display:flex;align-items:center;gap:0.8rem;
+}
+.menu-cat-head h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem;font-weight:600;color:var(--gold-pale);
+}
+.menu-cat-head span{font-size:1.1rem}
+.menu-items-list{padding:0.4rem 0}
+.menu-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:0.7rem 1.5rem;border-bottom:1px solid var(--border-emerald);
+  transition:background 0.2s;
+}
+.menu-row:last-child{border-bottom:none}
+.menu-row:hover{background:rgba(26,74,53,0.03)}
+.menu-row-left .name{font-size:0.9rem;color:var(--text-dark);font-weight:400}
+.menu-row-left .note{font-size:0.75rem;color:var(--text-muted);font-weight:300;display:block;margin-top:1px}
+.menu-price{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;font-weight:600;color:var(--emerald);
+  white-space:nowrap;margin-left:1rem;
+}
+.sig-badge{
+  display:inline-block;
+  font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;
+  background:var(--gold);color:var(--deep);
+  padding:1px 5px;margin-left:0.4rem;vertical-align:middle;font-weight:600;
+}
+
+/* ── SPECIALTIES ── */
+.specialties{background:var(--ivory-dark)}
+.specialties .inner{max-width:1280px;margin:0 auto}
+.spec-header{text-align:center;margin-bottom:4rem}
+.spec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+.spec-card{
+  background:var(--ivory);
+  border:1px solid var(--border-gold);
+  padding:2rem 1.5rem;text-align:center;
+  transition:all 0.35s;position:relative;overflow:hidden;
+}
+.spec-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(to right,var(--emerald),var(--gold));
+  transform:scaleX(0);transition:transform 0.35s;transform-origin:left;
+}
+.spec-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(26,74,53,0.1)}
+.spec-card:hover::before{transform:scaleX(1)}
+.spec-emoji{font-size:2.5rem;margin-bottom:1rem;display:block}
+.spec-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem;font-weight:600;color:var(--text-dark);
+  margin-bottom:0.5rem;
+}
+.spec-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.6;font-weight:300}
+
+/* ── TESTIMONIALS ── */
+.testimonials{background:var(--deep);position:relative;overflow:hidden}
+.testimonials::before{
+  content:'';position:absolute;inset:0;opacity:0.5;
+  background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23BFA05A' stroke-width='0.5' stroke-opacity='0.12'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M40 10 L70 40 L40 70 L10 40 Z'/%3E%3Ccircle cx='40' cy='40' r='8'/%3E%3C/g%3E%3C/svg%3E");
+}
+.testimonials .inner{max-width:1280px;margin:0 auto;position:relative;z-index:1}
+.testi-header{text-align:center;margin-bottom:4rem}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:rgba(191,160,90,0.1)}
+.testi-card{
+  background:rgba(13,42,30,0.7);
+  padding:2.2rem 2rem;
+}
+.testi-stars{color:var(--gold);font-size:0.85rem;margin-bottom:1rem;letter-spacing:0.1em}
+.testi-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;font-style:italic;font-weight:300;
+  color:rgba(245,237,208,0.8);line-height:1.75;margin-bottom:1.5rem;
+}
+.testi-author{display:flex;align-items:center;gap:0.8rem;border-top:1px solid rgba(191,160,90,0.12);padding-top:1.2rem}
+.testi-av{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:var(--emerald-mid);border:1px solid rgba(191,160,90,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:600;color:var(--gold);
+}
+.testi-name{font-size:0.85rem;font-weight:500;color:var(--gold-pale)}
+.testi-loc{font-size:0.72rem;color:rgba(191,160,90,0.4);margin-top:1px}
+
+/* ── HOURS & CONTACT ── */
+.contact{background:var(--ivory);position:relative}
+.contact .inner{
+  max-width:1280px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;
+}
+.contact-info h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem,4vw,3rem);font-weight:300;
+  color:var(--text-dark);margin-bottom:2rem;line-height:1.2;
+}
+.contact-info h2 em{font-style:italic;color:var(--emerald);font-weight:600}
+.info-block{margin-bottom:2rem}
+.info-block-label{
+  font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:0.6rem;display:block;
+}
+.info-block-value{font-size:0.95rem;color:var(--text-mid);font-weight:300;line-height:1.7}
+.info-block-value a{color:var(--emerald);text-decoration:none}
+.hours-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border:1px solid var(--border-emerald);margin-top:1.5rem;
+}
+.hour-row{
+  padding:1rem 1.2rem;border-bottom:1px solid var(--border-emerald);
+  border-right:1px solid var(--border-emerald);
+}
+.hour-row:nth-child(2n){border-right:none}
+.hour-row:nth-last-child(-n+2){border-bottom:none}
+.hour-meal{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:0.2rem}
+.hour-time{font-size:0.9rem;color:var(--text-dark);font-weight:400}
+
+.map-container{
+  border:1px solid var(--border-gold);
+  background:var(--ivory-dark);
+  height:360px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1.5rem;text-align:center;padding:2rem;
+}
+.map-icon{font-size:3rem;opacity:0.5}
+.map-address{font-size:0.9rem;color:var(--text-muted);line-height:1.6;font-weight:300}
+.map-btn{
+  background:var(--emerald);color:var(--ivory);
+  padding:0.8rem 2rem;font-size:0.8rem;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;
+  transition:background 0.3s;display:inline-block;
+}
+.map-btn:hover{background:var(--emerald-mid)}
+.phone-link{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:var(--gold);color:var(--deep);
+  padding:0.8rem 2rem;font-size:0.8rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;
+  margin-top:1rem;transition:background 0.3s;
+}
+.phone-link:hover{background:var(--gold-bright)}
+
+/* ── CTA BANNER ── */
+.cta-banner{
+  background:var(--emerald);position:relative;overflow:hidden;
+  padding:5rem 3.5rem;text-align:center;
+}
+.cta-banner::before{
+  content:'';position:absolute;inset:0;opacity:0.4;
+  background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23BFA05A' stroke-width='0.5' stroke-opacity='0.2'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M40 10 L70 40 L40 70 L10 40 Z'/%3E%3Ccircle cx='40' cy='40' r='8'/%3E%3C/g%3E%3C/svg%3E");
+}
+.cta-banner .inner{position:relative;z-index:1;max-width:600px;margin:0 auto}
+.cta-banner h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem,4vw,3rem);font-weight:300;
+  color:var(--gold-pale);margin-bottom:0.8rem;line-height:1.2;
+}
+.cta-banner h2 em{font-style:italic;color:var(--gold-bright);font-weight:600}
+.cta-banner p{color:rgba(245,237,208,0.6);font-size:0.95rem;font-weight:300;margin-bottom:2rem}
+.cta-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--deep);
+  border-top:1px solid rgba(191,160,90,0.1);
+  padding:3rem 3.5rem;
+}
+.footer-inner{
+  max-width:1280px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;
+}
+.footer-brand-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.6rem;font-weight:700;color:var(--gold-bright);
+  margin-bottom:0.3rem;
+}
+.footer-brand-sub{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(191,160,90,0.4)}
+.footer-brand-desc{
+  font-size:0.82rem;color:rgba(191,160,90,0.4);font-weight:300;
+  line-height:1.7;margin-top:1rem;max-width:260px;
+}
+.footer-col h4{
+  font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.2rem;font-weight:500;
+}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:0.7rem}
+.footer-col a{
+  font-size:0.82rem;color:rgba(191,160,90,0.4);text-decoration:none;
+  font-weight:300;transition:color 0.3s;
+}
+.footer-col a:hover{color:var(--gold)}
+.footer-col p{font-size:0.82rem;color:rgba(191,160,90,0.4);font-weight:300;line-height:1.7}
+.footer-bottom{
+  max-width:1280px;margin:2.5rem auto 0;
+  padding-top:2rem;border-top:1px solid rgba(191,160,90,0.08);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+}
+.footer-copy{font-size:0.75rem;color:rgba(191,160,90,0.25);font-weight:300}
+.footer-ornament{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;color:rgba(191,160,90,0.2);letter-spacing:0.3em;
+}
+
+/* ── REVEAL ── */
+[data-r]{opacity:0;transform:translateY(28px);transition:opacity 0.8s ease,transform 0.8s ease}
+[data-r].on{opacity:1;transform:none}
+[data-r="delay"]{transition-delay:0.15s}
+[data-r="delay2"]{transition-delay:0.3s}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  nav{padding:1rem 1.5rem}
+  .nav-links,.nav-reserve{display:none}
+  section{padding:4rem 1.5rem}
+  .about-inner,.contact .inner{grid-template-columns:1fr;gap:3rem}
+  .halls-grid,.testi-grid{grid-template-columns:1fr}
+  .spec-grid{grid-template-columns:repeat(2,1fr)}
+  .menu-header{grid-template-columns:1fr;gap:1rem}
+  .menu-grid{grid-template-columns:1fr}
+  .menu-cat{border-right:none}
+  .menu-cat:nth-child(n+2){border-top:1px solid var(--border-emerald)}
+  .footer-inner{grid-template-columns:1fr 1fr;gap:2rem}
+  .hero-badge{display:none}
+  .hero-content{padding:0 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-brand-main">Marhaba Mahal</span>
+    <span class="nav-brand-sub">Faisalabad · Est. by Babu Jee</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#halls">Dining Halls</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#specialties">Specialties</a></li>
+    <li><a href="#contact">Visit Us</a></li>
+  </ul>
+  <a href="https://wa.link/eujac9" class="nav-reserve" target="_blank">Reserve a Table</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <!-- Geometric Islamic pattern -->
+  <div class="hero-pattern">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="islamic" width="120" height="120" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#BFA05A" stroke-width="0.5" stroke-opacity="0.12">
+            <path d="M60 0 L120 60 L60 120 L0 60 Z"/>
+            <path d="M60 15 L105 60 L60 105 L15 60 Z"/>
+            <circle cx="60" cy="60" r="12"/>
+            <path d="M60 0 L60 120 M0 60 L120 60"/>
+            <path d="M0 0 L120 120 M120 0 L0 120"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#islamic)"/>
+      <!-- Decorative arch silhouette -->
+      <g opacity="0.06" fill="#BFA05A">
+        <path d="M1100 900 L1100 400 Q1100 200 1200 200 Q1300 200 1300 400 L1300 900 Z"/>
+        <path d="M1150 900 L1150 420 Q1150 250 1200 250 Q1250 250 1250 420 L1250 900 Z" fill="#1A4A35"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-line"></span>
+      <span class="hero-eyebrow-text">Faisalabad · Canal Expressway · Since Babu Jee's Era</span>
+    </div>
+    <h1>A Royal<br><strong>Dining Mahal</strong></h1>
+    <p class="hero-urdu">مرحبا محل — خوش آمدید</p>
+    <p class="hero-desc">Born from a humble tandoor, grown into Faisalabad's most celebrated dining destination. Authentic desi cuisine, royal ambiance, and hospitality that leaves every guest feeling like royalty.</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-gold">Explore Our Menu</a>
+      <a href="#halls" class="btn-ghost">View Dining Halls</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span class="hero-scroll-text">Scroll to discover</span>
+  </div>
+  <div class="hero-badge">
+    <span class="hero-badge-num">2,490+</span>
+    <span class="hero-badge-label">5★ Reviews</span>
+  </div>
+</div>
+
+<!-- RIBBON -->
+<div class="ribbon">
+  <div class="ribbon-item"><span class="ribbon-num">90%</span><span class="ribbon-label">Recommend Rate</span></div>
+  <div class="ribbon-item"><span class="ribbon-num">6</span><span class="ribbon-label">Unique Dining Halls</span></div>
+  <div class="ribbon-item"><span class="ribbon-num">3</span><span class="ribbon-label">Menus Daily</span></div>
+  <div class="ribbon-item"><span class="ribbon-num">9+</span><span class="ribbon-label">Years of Excellence</span></div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <div class="about-text" data-r>
+      <div class="section-tag"><span class="section-tag-line"></span><span class="section-tag-text">Our Story</span></div>
+      <h2 class="section-title">From a Humble Lounge<br>to a <em>Royal Legacy</em></h2>
+      <div class="about-divider"></div>
+      <p>The name <strong>"Marhaba"</strong> emerged from Babu Jee's small lounge — a place where warmth, flavour, and community were inseparable. What began as a modest dream gradually grew into a customer convenience chain that became <strong>Faisalabad's most iconic dining destination.</strong></p>
+      <p>This house has witnessed everything that went around the city. With integrity and values woven into its very foundation, we serve every guest as our privilege — presenting traditional desi cuisines and BBQ, freshly prepared with organic ingredients and <strong>special in-house recipes</strong> that give food lovers an unforgettable experience.</p>
+      <p>With Marhaba Mahal, we revolutionize the dining concept — making every meal a whole <strong>Royal Experience</strong>, worthy of Lyallpur's rich heritage.</p>
+      <div class="about-values">
+        <div class="about-val">
+          <div class="about-val-title">Organic Ingredients</div>
+          <div class="about-val-text">Fresh, quality produce prepared daily with no compromise</div>
+        </div>
+        <div class="about-val">
+          <div class="about-val-title">In-House Recipes</div>
+          <div class="about-val-text">Secret masalas and spice blends perfected over generations</div>
+        </div>
+        <div class="about-val">
+          <div class="about-val-title">Royal Hospitality</div>
+          <div class="about-val-text">Attentive service that treats every guest like royalty</div>
+        </div>
+        <div class="about-val">
+          <div class="about-val-title">Wheelchair Access</div>
+          <div class="about-val-text">Fully accessible with ramps alongside stairs for all guests</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual" data-r="delay">
+      <div class="palace-card">
+        <div class="palace-arch">
+          <span class="arch-ornament">🕌</span>
+          <p class="palace-quote">"We serve the customer as our privilege — and food as our art."</p>
+          <p class="palace-attr">— The Marhaba Mahal Promise</p>
+        </div>
+        <div class="palace-stats">
+          <div class="ps-item"><span class="ps-num">★4.9</span><span class="ps-label">Google Rating</span></div>
+          <div class="ps-item"><span class="ps-num">10/10</span><span class="ps-label">TripAdvisor</span></div>
+          <div class="ps-item"><span class="ps-num">No.1</span><span class="ps-label">Desi in FSD</span></div>
+          <div class="ps-item"><span class="ps-num">Halal</span><span class="ps-label">Certified</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DINING HALLS -->
+<section class="halls" id="halls">
+  <div class="inner">
+    <div class="halls-header" data-r>
+      <div class="section-tag" style="justify-content:center"><span class="section-tag-line"></span><span class="section-tag-text">Spaces & Venues</span></div>
+      <h2 class="section-title section-title-white">Six Extraordinary<br><em>Dining Halls</em></h2>
+    </div>
+    <div class="halls-grid">
+      <div class="hall-card" data-r>
+        <span class="hall-icon"></span>
+        <div class="hall-name">Blossom Lounge</div>
+        <p class="hall-desc">An intimate, floral-themed lounge perfect for smaller gatherings and romantic evenings in a beautifully curated setting.</p>
+        <span class="hall-tag">Indoor · Intimate</span>
+      </div>
+      <div class="hall-card" data-r="delay">
+        <span class="hall-icon"></span>
+        <div class="hall-name">Rooftop</div>
+        <p class="hall-desc">Dine under the open sky with panoramic views of the city. The most sought-after venue for evening meals and fresh air dining.</p>
+        <span class="hall-tag">Outdoor · Sky Dining</span>
+      </div>
+      <div class="hall-card" data-r="delay2">
+        <span class="hall-icon"></span>
+        <div class="hall-name">Rose Hall</div>
+        <p class="hall-desc">Elegant rose-themed banquet hall with warm tones, ideal for family celebrations, reunions, and formal gatherings.</p>
+        <span class="hall-tag">Banquet · Family Events</span>
+      </div>
+      <div class="hall-card" data-r>
+        <span class="hall-icon"></span>
+        <div class="hall-name">Tree House</div>
+        <p class="hall-desc">A whimsical, nature-inspired space that brings the outdoors in — a unique and memorable dining environment unlike any other.</p>
+        <span class="hall-tag">Theme · Unique</span>
+      </div>
+      <div class="hall-card" data-r="delay">
+        <span class="hall-icon"></span>
+        <div class="hall-name">Jasmine Hall</div>
+        <p class="hall-desc">Fragrant and serene, the Jasmine Hall offers a graceful atmosphere perfect for business lunches and premium dining occasions.</p>
+        <span class="hall-tag">Premium · Corporate</span>
+      </div>
+      <div class="hall-card" data-r="delay2">
+        <span class="hall-icon"></span>
+        <div class="hall-name">Mahal Bar Area</div>
+        <p class="hall-desc">The vibrant social hub of Marhaba Mahal — where the energy of the restaurant comes alive with drinks, starters, and good company.</p>
+        <span class="hall-tag">Social · Lively</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu-section" id="menu">
+  <div class="inner">
+    <div class="menu-header" data-r>
+      <div>
+        <div class="section-tag"><span class="section-tag-line"></span><span class="section-tag-text">What We Serve</span></div>
+        <h2 class="section-title">Three Menus,<br><em>Endless Flavour</em></h2>
+      </div>
+      <div class="menu-header-right">
+        From a hearty Desi Nashta at sunrise to a lavish multi-course dinner — our kitchen works from morning until night, crafting every dish fresh with organic ingredients and generations-old recipes.
+      </div>
+    </div>
+
+    <div class="menu-tabs">
+      <button class="menu-tab active" onclick="switchTab(this,'breakfast')">Breakfast (Nashta)</button>
+      <button class="menu-tab" onclick="switchTab(this,'lunch')">Lunch</button>
+      <button class="menu-tab" onclick="switchTab(this,'dinner')">Dinner</button>
+    </div>
+
+    <!-- BREAKFAST -->
+    <div class="menu-panel active" id="panel-breakfast">
+      <div class="menu-grid">
+        <div class="menu-cat">
+          <div class="menu-cat-head"><span></span><h3>Nashta Classics</h3></div>
+          <div class="menu-items-list">
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Desi Anda Paratha <span class="sig-badge">★ Bestseller</span></span><span class="note">Free-range egg with flaky layered paratha</span></div><span class="menu-price">Rs 220</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Halwa Puri</span><span class="note">Semolina halwa with crispy puri and chana</span></div><span class="menu-price">Rs 280</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Nihari</span><span class="note">Slow-cooked beef stew, slow simmered overnight</span></div><span class="menu-price">Rs 450</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Paye (Trotters)</span><span class="note">Traditional breakfast paye in rich, spiced broth</span></div><span class="menu-price">Rs 400</span></div>
+          </div>
+        </div>
+        <div class="menu-cat">
+          <div class="menu-cat-head"><span></span><h3>Drinks & Sides</h3></div>
+          <div class="menu-items-list">
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Mango Lassi <span class="sig-badge">★ Famous</span></span><span class="note">Thick, creamy mango yogurt drink</span></div><span class="menu-price">Rs 200</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Doodh Patti Chai</span><span class="note">Rich, strong milk tea brewed the desi way</span></div><span class="menu-price">Rs 90</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Oat Milk Special</span><span class="note">Modern healthy breakfast drink</span></div><span class="menu-price">Rs 180</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Achar & Chutney</span><span class="note">House-made accompaniments</span></div><span class="menu-price">Rs 60</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LUNCH -->
+    <div class="menu-panel" id="panel-lunch">
+      <div class="menu-grid">
+        <div class="menu-cat">
+          <div class="menu-cat-head"><span></span><h3>Karahi & Curries</h3></div>
+          <div class="menu-items-list">
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Desi Murgh Karahi <span class="sig-badge">★ Signature</span></span><span class="note">Country chicken in fresh tomato-based masala</span></div><span class="menu-price">Rs 1,100</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Mutton Karahi <span class="sig-badge">★ Top Pick</span></span><span class="note">Premium mutton in our famous in-house karahi masala</span></div><span class="menu-price">Rs 1,600</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Chana Gosht</span><span class="note">Mutton with chickpeas in slow-cooked masala</span></div><span class="menu-price">Rs 900</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Dumpukht <span class="sig-badge">★ Specialty</span></span><span class="note">Slow-sealed meat cooked in its own steam and spices</span></div><span class="menu-price">Rs 1,800</span></div>
+          </div>
+        </div>
+        <div class="menu-cat">
+          <div class="menu-cat-head"><span></span><h3>Rice & Bread</h3></div>
+          <div class="menu-items-list">
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Biryani (Mutton)</span><span class="note">Fragrant long-grain rice with tender mutton</span></div><span class="menu-price">Rs 700</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Roghni Naan</span><span class="note">Buttery sesame-topped fresh tandoor naan</span></div><span class="menu-price">Rs 90</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Tandoori Roti</span><span class="note">Whole wheat bread, freshly baked in clay oven</span></div><span class="menu-price">Rs 45</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Raita & Salad Bar</span><span class="note">Fresh seasonal salads, yogurt dips, chutneys</span></div><span class="menu-price">Rs 150</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DINNER -->
+    <div class="menu-panel" id="panel-dinner">
+      <div class="menu-grid">
+        <div class="menu-cat">
+          <div class="menu-cat-head"><span></span><h3>BBQ & Grill</h3></div>
+          <div class="menu-items-list">
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Special Kebab <span class="sig-badge">★ Signature</span></span><span class="note">Marhaba's famous hand-crafted minced meat kebabs</span></div><span class="menu-price">Rs 600</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Champ (Mutton Chops)</span><span class="note">Marinated rack chops, charcoal-grilled to perfection</span></div><span class="menu-price">Rs 1,200</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Fish Tikka</span><span class="note">Fresh fish fillet in our aromatic tikka marinade</span></div><span class="menu-price">Rs 900</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Batair (Quail)</span><span class="note">Tender quail marinated and grilled on open flame</span></div><span class="menu-price">Rs 800</span></div>
+          </div>
+        </div>
+        <div class="menu-cat">
+          <div class="menu-cat-head"><span></span><h3>Seafood & Chinese</h3></div>
+          <div class="menu-items-list">
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Grilled Fish</span><span class="note">Whole river fish, marinated and flame-grilled</span></div><span class="menu-price">Rs 1,400</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Augeethi</span><span class="note">Marhaba's special slow-braised meat preparation</span></div><span class="menu-price">Rs 1,600</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Chinese Platter</span><span class="note">Stir-fried noodles, fried rice, and spring rolls</span></div><span class="menu-price">Rs 950</span></div>
+            <div class="menu-row"><div class="menu-row-left"><span class="name">Marhaba Karahi Tikka</span><span class="note">House specialty — tikka cooked in fresh karahi masala</span></div><span class="menu-price">Rs 1,400</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECIALTIES -->
+<section class="specialties" id="specialties">
+  <div class="inner">
+    <div class="spec-header" data-r>
+      <div class="section-tag" style="justify-content:center"><span class="section-tag-line"></span><span class="section-tag-text">House Signatures</span></div>
+      <h2 class="section-title">Dishes That Define <em>Marhaba Mahal</em></h2>
+    </div>
+    <div class="spec-grid">
+      <div class="spec-card" data-r>
+        <span class="spec-emoji"></span>
+        <div class="spec-name">Mutton Karahi</div>
+        <p class="spec-desc">The crown jewel of Marhaba Mahal. Premium mutton cooked in a blazing karahi with tomatoes, green chillies, and our signature masala. Unmatched in Faisalabad.</p>
+      </div>
+      <div class="spec-card" data-r="delay">
+        <span class="spec-emoji"></span>
+        <div class="spec-name">Dumpukht</div>
+        <p class="spec-desc">An ancient Mughal preparation — meat sealed in a vessel and slow-cooked in its own juices and aromatic spices until fall-off-the-bone tender.</p>
+      </div>
+      <div class="spec-card" data-r="delay2">
+        <span class="spec-emoji"></span>
+        <div class="spec-name">Special Kebab</div>
+        <p class="spec-desc">Marhaba's handcrafted minced meat kebabs — a closely-guarded recipe that has earned thousands of loyal fans over the years.</p>
+      </div>
+      <div class="spec-card" data-r>
+        <span class="spec-emoji"></span>
+        <div class="spec-name">Fish Tikka</div>
+        <p class="spec-desc">Freshwater fish fillet marinated in a vibrant tikka blend and grilled over charcoal to golden perfection — a must for seafood lovers.</p>
+      </div>
+      <div class="spec-card" data-r="delay">
+        <span class="spec-emoji"></span>
+        <div class="spec-name">Desi Murgh Karahi</div>
+        <p class="spec-desc">Country chicken from the tandoor to the karahi — the freshness of the bird and our fresh tomato-chilli masala create something truly special.</p>
+      </div>
+      <div class="spec-card" data-r="delay2">
+        <span class="spec-emoji"></span>
+        <div class="spec-name">Batair (Quail)</div>
+        <p class="spec-desc">A rare delicacy on any menu — tender quail marinated in our spice blend and grilled until crispy outside, juicy within. A true Mahal exclusive.</p>
+      </div>
+      <div class="spec-card" data-r>
+        <span class="spec-emoji"></span>
+        <div class="spec-name">Mango Lassi</div>
+        <p class="spec-desc">Thick, creamy, and bursting with fresh mango — our legendary lassi is praised by guests as the best in Faisalabad. The perfect end to any meal.</p>
+      </div>
+      <div class="spec-card" data-r="delay">
+        <span class="spec-emoji"></span>
+        <div class="spec-name">Marhaba Karahi Tikka</div>
+        <p class="spec-desc">Our signature creation — tikka marinated meat finished inside a fresh karahi masala. The best of both worlds, only at Marhaba Mahal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="inner">
+    <div class="testi-header" data-r>
+      <div class="section-tag" style="justify-content:center"><span class="section-tag-line"></span><span class="section-tag-text">Guest Voices</span></div>
+      <h2 class="section-title section-title-white">What Our <em>Guests Say</em></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card" data-r>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Best desi food restaurant in Faisalabad with great ambiance. Desi Murgh Karahi, Special Kebab, and Dumpukht were all on top. Management is cooperative and professional. Will rate it 10/10.</p>
+        <div class="testi-author">
+          <div class="testi-av">TH</div>
+          <div><div class="testi-name">Tariq Hameed Asif</div><div class="testi-loc">Faisalabad</div></div>
+        </div>
+      </div>
+      <div class="testi-card" data-r="delay">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Being a loyal customer for the past 9 years, I can confidently say Marhaba Mahal is still the No. 1 spot in FSD. Their consistency in taste, hygiene, and service is unmatched!</p>
+        <div class="testi-author">
+          <div class="testi-av">SK</div>
+          <div><div class="testi-name">Sarah's Kitchen</div><div class="testi-loc">9-Year Loyal Guest</div></div>
+        </div>
+      </div>
+      <div class="testi-card" data-r="delay2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Quality hospitality I have never experienced in any other reputable restaurant of Faisalabad. At the end of your dining session you are offered a warm wet towel — the small touches make the difference.</p>
+        <div class="testi-author">
+          <div class="testi-av">SS</div>
+          <div><div class="testi-name">Sajjad Shahid</div><div class="testi-loc">Faisalabad</div></div>
+        </div>
+      </div>
+      <div class="testi-card" data-r>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">The rooftop is a very good option here — very clean, nice, and the desi food is outstanding. Ambiance is great and food quality is very good. Highly recommend the BBQ platter.</p>
+        <div class="testi-author">
+          <div class="testi-av">HA</div>
+          <div><div class="testi-name">Hafiz Arslan Zia</div><div class="testi-loc">Faisalabad</div></div>
+        </div>
+      </div>
+      <div class="testi-card" data-r="delay">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Tried their famous breakfast — best in Faisalabad. Mango lassi is also very good. Food was fresh and hot. Staff behavior is also excellent. Marhaba Mahal never disappoints.</p>
+        <div class="testi-author">
+          <div class="testi-av">MI</div>
+          <div><div class="testi-name">Muhammad Idrees Taj</div><div class="testi-loc">Faisalabad</div></div>
+        </div>
+      </div>
+      <div class="testi-card" data-r="delay2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Highly recommended if you are with family. Sitting environment is good and so is the food. Ordered BBQ platter with fish and both were amazing. The management treats you the way one should be treated.</p>
+        <div class="testi-author">
+          <div class="testi-av">SM</div>
+          <div><div class="testi-name">M Shafan Ul Moiz</div><div class="testi-loc">Faisalabad</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<div class="cta-banner">
+  <div class="inner">
+    <h2>Reserve Your Table at<br><em>Marhaba Mahal</em></h2>
+    <p>Join thousands of happy guests who have made Marhaba Mahal their go-to dining destination in Faisalabad.</p>
+    <div class="cta-actions">
+      <a href="https://wa.link/eujac9" class="btn-gold" target="_blank">Reserve via WhatsApp</a>
+      <a href="tel:+923317319794" class="btn-ghost">Call: +92 331 7319794</a>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="inner">
+    <div class="contact-info" data-r>
+      <div class="section-tag"><span class="section-tag-line"></span><span class="section-tag-text">Find Us</span></div>
+      <h2>Come Dine With<br><em>Royalty</em></h2>
+
+      <div class="info-block">
+        <span class="info-block-label">Address</span>
+        <div class="info-block-value">Canal Expressway, Faisalabad<br>Punjab, Pakistan — 38000</div>
+      </div>
+
+      <div class="info-block">
+        <span class="info-block-label">Phone & Reservations</span>
+        <div class="info-block-value"><a href="tel:+923317319794">+92 331 7319794</a></div>
+      </div>
+
+      <div class="info-block">
+        <span class="info-block-label">Social Media</span>
+        <div class="info-block-value"><a href="https://www.facebook.com/marhabamahalfsd" target="_blank">@marhabamahalfsd</a> on Facebook</div>
+      </div>
+
+      <div class="info-block">
+        <span class="info-block-label">Services</span>
+        <div class="info-block-value">Dine-In · Outdoor Seating · Takeaway · In-Store Pickup · No-Contact Delivery</div>
+      </div>
+
+      <div>
+        <span class="info-block-label">Dining Hours</span>
+        <div class="hours-grid">
+          <div class="hour-row"><div class="hour-meal">Nashta</div><div class="hour-time">Morning – Afternoon</div></div>
+          <div class="hour-row"><div class="hour-meal">Lunch</div><div class="hour-time">Afternoon Service</div></div>
+          <div class="hour-row"><div class="hour-meal">Dinner</div><div class="hour-time">Evening – Night</div></div>
+          <div class="hour-row"><div class="hour-meal">Delivery</div><div class="hour-time">Via Foodpanda</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div data-r="delay">
+      <div class="map-container">
+        <div class="map-icon">📍</div>
+        <p class="map-address">Canal Expressway, Faisalabad<br>Punjab, Pakistan</p>
+        <a href="https://maps.app.goo.gl/YCEMVSM9BUYEFutK6" target="_blank" class="map-btn">Open in Google Maps</a>
+      </div>
+      <a href="tel:+923317319794" class="phone-link">📞 &nbsp; Call +92 331 7319794</a>
+      <div style="margin-top:1.5rem;padding:1.2rem;background:var(--ivory-dark);border:1px solid var(--border-emerald)">
+        <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.7;font-weight:300">
+          <strong style="color:var(--emerald);font-weight:500">Wheelchair accessible</strong> — ramps alongside stairs ensure easy access for all guests. Outdoor seating available on the Rooftop. Ample parking on-site.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-name">Marhaba Mahal</div>
+      <div class="footer-brand-sub">Faisalabad · Est. by Babu Jee</div>
+      <p class="footer-brand-desc">Faisalabad's most celebrated dining destination — where authentic desi cuisine meets royal hospitality on Canal Expressway.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#halls">Dining Halls</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#specialties">Specialties</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Visit</h4>
+      <ul>
+        <li><a href="#contact">Directions</a></li>
+        <li><a href="https://wa.link/eujac9" target="_blank">Reserve a Table</a></li>
+        <li><a href="https://www.foodpanda.pk/restaurant/u5k6/marhaba-mahal" target="_blank">Order Delivery</a></li>
+        <li><a href="https://marhabamahal.com" target="_blank">Official Website</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <p>Canal Expressway<br>Faisalabad, Punjab<br>Pakistan — 38000<br><br><a href="tel:+923317319794" style="color:var(--gold);opacity:0.7">+92 331 7319794</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 Marhaba Mahal. All rights reserved. · Canal Expressway, Faisalabad</span>
+    <span class="footer-ornament">✦ &nbsp; مرحبا محل &nbsp; ✦</span>
+  </div>
+</footer>
+
+<script>
+function switchTab(btn, panel) {
+  document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + panel).classList.add('active');
+}
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('on'), i * 90);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('[data-r]').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
