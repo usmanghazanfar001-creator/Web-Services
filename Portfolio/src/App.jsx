@@ -10,7 +10,7 @@ import {
   PROFILE, NAV_LINKS, ABOUT, STATS, SKILL_GROUPS, SERVICES, PROJECTS,
   PROJECT_FILTERS, TIMELINE,
 } from './data/content'
-import profileImg from './assets/images/profile.png'
+import profileImg from './assets/images/profile.webp'
 import Orbit from './components/Orbit'
 import { GithubIcon, WhatsAppIcon, FiverrIcon, GmailIcon, LinkedInIcon } from './components/BrandIcons'
 
@@ -72,18 +72,18 @@ function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <motion.div style={{ scaleX: bar }} className="h-0.5 origin-left bg-gradient-to-r from-accent via-accent-2 to-accent-3" />
-      <nav className="mx-auto mt-3 flex max-w-6xl items-center justify-between rounded-full border border-line bg-ink/70 px-5 py-2.5 backdrop-blur-xl max-sm:mx-3">
+      <nav aria-label="Main" className="mx-auto mt-3 flex max-w-6xl items-center justify-between rounded-full border border-line bg-ink/70 px-5 py-2.5 backdrop-blur-xl max-sm:mx-3">
         <a href="#home" className="font-display text-lg font-bold text-white">{PROFILE.firstName}<span className="grad-text">.</span></a>
         <ul className="hidden gap-1 md:flex">
           {NAV_LINKS.map((l) => (
             <li key={l.href}><a href={l.href} className={`rounded-full px-3 py-1.5 text-sm transition ${active === l.href.slice(1) ? 'bg-white/10 text-white' : 'hover:text-white'}`}>{l.label}</a></li>
           ))}
         </ul>
-        <button className="md:hidden" aria-label="Menu" onClick={() => setOpen(!open)}>{open ? <X size={22} /> : <Menu size={22} />}</button>
+        <button className="md:hidden" aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)}>{open ? <X size={22} /> : <Menu size={22} />}</button>
       </nav>
       <AnimatePresence>
         {open && (
-          <motion.ul initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+          <motion.ul id="mobile-menu" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             className="mx-3 mt-2 rounded-3xl border border-line bg-ink/95 p-3 backdrop-blur-xl md:hidden">
             {NAV_LINKS.map((l) => <li key={l.href}><a onClick={() => setOpen(false)} href={l.href} className="block rounded-xl px-4 py-3 hover:bg-white/5">{l.label}</a></li>)}
           </motion.ul>
@@ -122,7 +122,7 @@ function Hero() {
               Open to work
             </motion.span>
           )}
-          <h1 className="mt-6 font-display text-5xl font-bold leading-[1.02] tracking-tight text-white sm:text-7xl lg:text-6xl xl:text-7xl" aria-label={`Hi, I'm ${PROFILE.name} ${PROFILE.title}`}>
+          <h1 className="mt-6 font-display text-5xl font-bold leading-[1.02] tracking-tight text-white sm:text-7xl lg:text-6xl xl:text-7xl" aria-label={`${PROFILE.name} — ${PROFILE.title} in Faisalabad, Pakistan`}>
             <Words text="Hi, I'm" delay={0.1} />
             <span className="grad-text"><Words text={PROFILE.name} delay={0.25} /></span><br />
             <Words text={PROFILE.title} delay={0.5} />
@@ -137,7 +137,7 @@ function Hero() {
         <Portrait>
           <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-accent via-accent-2 to-accent-3 opacity-60 blur-2xl" />
           <div className="relative rounded-full bg-gradient-to-br from-accent via-accent-2 to-accent-3 p-1">
-            <img src={profileImg} alt={PROFILE.name} className="aspect-square w-full rounded-full border-4 border-ink object-cover object-top" />
+            <img src={profileImg} width="640" height="640" fetchPriority="high" decoding="async" alt={`${PROFILE.name}, ${PROFILE.title} based in Faisalabad, Pakistan`} className="aspect-square w-full rounded-full border-4 border-ink object-cover object-top" />
           </div>
         </Portrait>
       </div>
@@ -233,7 +233,7 @@ function ProjectModal({ p, onClose }) {
         <h4 className="mt-5 text-sm font-semibold text-white">Solution</h4><p className="mt-1 text-zinc-400">{p.solution}</p>
         <h4 className="mt-5 text-sm font-semibold text-white">Key features</h4>
         <ul className="mt-2 space-y-1.5">{p.features.map((f) => <li key={f} className="flex items-start gap-2 text-zinc-400"><Check size={16} className="mt-0.5 shrink-0 text-accent-2" />{f}</li>)}</ul>
-        {p.link && <a href={p.link} target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-medium text-ink">{p.linkLabel} <ArrowUpRight size={16} /></a>}
+        {p.link && <a href={p.link} target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-medium text-ink">{p.linkLabel} <ArrowUpRight size={16} /></a>}
       </motion.div>
     </motion.div>
   )
@@ -311,7 +311,7 @@ const Contact = () => {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {links.map(({ Ic, label, value, href, color }, i) => (
           <Reveal key={label} delay={(i % 3) * 0.06}>
-            <motion.a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" onMouseMove={spotlight}
+            <motion.a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" onMouseMove={spotlight}
               whileHover="hover" whileTap={{ scale: 0.98 }} style={{ '--brand': color }}
               className="card glow brand-card group relative flex items-center gap-4 p-5">
               <motion.span variants={{ hover: { scale: 1.12, rotate: -6 } }} transition={{ type: 'spring', stiffness: 350, damping: 14 }}

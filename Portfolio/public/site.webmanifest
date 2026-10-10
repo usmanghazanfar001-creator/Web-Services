@@ -1,12 +1,13 @@
 {
   "name": "Usman Ghazanfar — AI & Web Developer",
-  "short_name": "Usman G.",
+  "short_name": "Usman Ghazanfar",
+  "description": "Portfolio of Usman Ghazanfar, AI & Web Developer in Faisalabad, Pakistan.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#07070b",
   "theme_color": "#07070b",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }

@@ -7,6 +7,7 @@ export const PROFILE = {
   lastName: 'Ghazanfar',
   title: 'AI & Web Developer',
   location: 'Faisalabad, Pakistan',
+  siteUrl: 'https://usmanghazanfar.vercel.app',
   tagline:
     'I build AI-powered systems and websites — combining automation, machine learning and modern web engineering to help brands scale.',
   email: 'Usmanghazanfar100@gmail.com',
