@@ -77,7 +77,11 @@ function jsonLd() {
   return `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c')}</script>`
 }
 
+import fs from 'node:fs'
+import path from 'node:path'
+
 export default function seoPlugin() {
+  let outDir = 'dist'
   return {
     name: 'portfolio-seo',
     transformIndexHtml: {
@@ -86,12 +90,13 @@ export default function seoPlugin() {
         return html.replaceAll('%SITE_URL%', PROFILE.siteUrl).replace('<!--SEO_JSON_LD-->', jsonLd()).replace('<!--SEO_FALLBACK-->', fallbackHtml())
       },
     },
-    generateBundle() {
-      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `User-agent: *\nAllow: /\n\nSitemap: ${PROFILE.siteUrl}/sitemap.xml\n` })
+    configResolved(cfg) { outDir = path.resolve(cfg.root, cfg.build.outDir) },
+    // closeBundle runs AFTER public/ is copied, so stale public/sitemap.xml or
+    // public/robots.txt files can never override these generated ones.
+    closeBundle() {
       const lastmod = new Date().toISOString().slice(0, 10)
-      this.emitFile({
-        type: 'asset', fileName: 'sitemap.xml',
-        source: `<?xml version="1.0" encoding="UTF-8"?>
+      fs.writeFileSync(path.join(outDir, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${PROFILE.siteUrl}/sitemap.xml\n`)
+      fs.writeFileSync(path.join(outDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>${PROFILE.siteUrl}/</loc>
@@ -101,8 +106,7 @@ export default function seoPlugin() {
     <image:image><image:loc>${PROFILE.siteUrl}/og-image.png</image:loc></image:image>
   </url>
 </urlset>
-`,
-      })
+`)
     },
   }
 }
